@@ -1,3 +1,15 @@
+/**
+ * GWorkspace Timesheet
+ * 
+ * Cet outil permet de transformer Google Agenda en un système de suivi du temps (Time Tracking).
+ * Les utilisateurs marquent leurs événements avec des hashtags (ex: #Projet) et l'extension
+ * génère automatiquement des rapports détaillés et agrégés dans Google Sheets.
+ * 
+ * @author Fabrice Faucheux
+ * @version 1.1.0
+ * @see https://atelier-informatique.com
+ */
+
 const onInstall = (e) => {
   onOpen(e);
 };
