@@ -1,5 +1,3 @@
-//@OnlyCurrentDoc
-
 const onInstall = (e) => {
   onOpen(e);
 };
@@ -12,8 +10,8 @@ function getUserLanguage() {
 const afficherBarreCreation = () => {
   try {
     const isEn = Session.getActiveUserLocale().startsWith('en');
-    const html = HtmlService.createHtmlOutputFromFile('Sidebar_Export')
-                            .setTitle(isEn ? 'Time Report Generator' : 'Générateur de rapport de temps')
+    const html = HtmlService.createTemplateFromFile('Sidebar_Export').evaluate()
+                            .setTitle(isEn ? 'GWorkspace Timesheet' : 'GWorkspace Timesheet')
                             .setWidth(350);
     SpreadsheetApp.getUi().showSidebar(html);
   } catch (erreur) {
@@ -28,45 +26,55 @@ const onOpen = (e) => {
   ui.createAddonMenu()
     .addItem(isEn ? 'Create report' : 'Créer un rapport', 'afficherBarreCreation')
     .addItem(isEn ? 'Start timer' : 'Lancer le chronomètre', 'afficherTimerSidebar')
-    .addItem(isEn ? 'Show instructions' : 'Afficher les instructions', 'afficherInstructionsBarreLaterale')
+    .addItem(isEn ? 'Send report by email' : 'Envoyer le rapport par email', 'envoyerContenuFeuilleParEmail')
     .addSeparator()
+    .addItem(isEn ? 'Show instructions' : 'Afficher les instructions', 'afficherInstructionsBarreLaterale')
     .addItem(isEn ? 'About' : 'A propos', 'afficherInfosDeveloppeur')
     .addToUi();
 };
 
 const afficherInstructionsBarreLaterale = () => {
   const isEn = Session.getActiveUserLocale().startsWith('en');
-  const html = HtmlService.createHtmlOutputFromFile('Sidebar_Help')
-    .setTitle(isEn ? 'Instructions' : 'Instructions')
+  const html = HtmlService.createTemplateFromFile('Sidebar_Help').evaluate()
+    .setTitle('Instructions')
     .setWidth(350);
   SpreadsheetApp.getUi().showSidebar(html);
 };
 
 
 function afficherInfosDeveloppeur() {
-
   const htmlContent = `
     <html>
       <head>
-        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
         <style>
+          :root {
+            --primary: #1a73e8;
+            --on-surface: #202124;
+            --surface: #f8f9fa;
+            --outline: #dadce0;
+          }
+          @media (prefers-color-scheme: dark) {
+            :root {
+              --primary: #8ab4f8;
+              --on-surface: #e8eaed;
+              --surface: #202124;
+              --outline: #5f6368;
+            }
+          }
           body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Google Sans', Arial, sans-serif;
             margin: 20px;
-            color: #202124; /* Google Workspace text color */
+            color: var(--on-surface);
+            background: var(--surface);
           }
-          strong {
-            color: #202124; /* Darker text for emphasis */
-          }
-          p {
-            line-height: 1.6;
-          }
-          .linkedin-logo, .paypal-logo {
-            vertical-align: middle;
-            margin-right: 5px;
-          }
+          strong { color: var(--on-surface); }
+          p { line-height: 1.6; font-size: 14px; }
+          a { color: var(--primary); text-decoration: none; }
+          a:hover { text-decoration: underline; }
+          .linkedin-logo { vertical-align: middle; margin-right: 5px; }
           .paypal-button {
-            background-color: #FFB830; /* PayPal button color */
+            background-color: #FFB830;
             color: #202124;
             padding: 10px 20px;
             border: none;
@@ -80,15 +88,15 @@ function afficherInfosDeveloppeur() {
         </style>
       </head>
       <body>
-        <p>Développé par Fabrice Faucheux <a href='https://atelier-informatique.com' target="_blank">L'atelier informatique</a></p>
-        <p>Me retrouver sur LinkedIn <a href='https://www.linkedin.com/in/fabricefaucheux' target="_blank"><img class="linkedin-logo" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20" height="20"/>Fabrice Faucheux</a></p>
-        <p>Si vous souhaitez soutenir mon travail, vous pouvez faire un don via PayPal :</p>
-        <p><a class="paypal-button" href='https://paypal.me/FFaucheux?country.x=FR&locale.x=fr_FR' target="_blank">Soutenir via PayPal</a></p>
+        <p>${T_('aboutDev')} <a href='https://atelier-informatique.com' target="_blank">L'atelier informatique</a></p>
+        <p>${T_('aboutLinkedIn')} <a href='https://www.linkedin.com/in/fabricefaucheux' target="_blank"><img class="linkedin-logo" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="20" height="20"/>Fabrice Faucheux</a></p>
+        <p>${T_('aboutDonate')}</p>
+        <p><a class="paypal-button" href='https://paypal.me/FFaucheux?country.x=FR&locale.x=fr_FR' target="_blank">${T_('aboutDonateBtn')}</a></p>
       </body>
     </html>
   `;
   const dialogue = HtmlService.createHtmlOutput(htmlContent)
     .setWidth(450)
-    .setHeight(260); // Ajustez la hauteur pour bien afficher tout le contenu
-  SpreadsheetApp.getUi().showModalDialog(dialogue, 'À propos');
+    .setHeight(260);
+  SpreadsheetApp.getUi().showModalDialog(dialogue, T_('aboutTitle'));
 }

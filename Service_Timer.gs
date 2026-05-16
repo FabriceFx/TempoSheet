@@ -1,6 +1,6 @@
 function afficherTimerSidebar() {
   const isEn = Session.getActiveUserLocale().startsWith('en');
-  const html = HtmlService.createHtmlOutputFromFile('Sidebar_Timer')
+  const html = HtmlService.createTemplateFromFile('Sidebar_Timer').evaluate()
     .setTitle(isEn ? 'Time Tracker' : 'Enregistrement des tâches')
     .setWidth(300);
   SpreadsheetApp.getUi().showSidebar(html);
@@ -31,22 +31,21 @@ function saveTimerState(agendaId, projectName, taskDescription, startTime) {
 }
 
 function clearTimerState() {
-  PropertiesService.getUserProperties().deleteProperty('TIMER_RUNNING');
+  PropertiesService.getUserProperties().deleteAllProperties();
 }
 
 function creerEvenementDansAgenda(agendaId, projectName, taskDescription, startTime, endTime) {
   try {
     const calendar = CalendarApp.getCalendarById(agendaId);
     if (!calendar) {
-      throw new Error(`Calendrier non trouvé.`);
+      throw new Error(T_('calendarNotFound'));
     }
     const eventTitle = `#${projectName.replace(/\s+/g, '')}${taskDescription ? " " + taskDescription : ""}`;
     const event = calendar.createEvent(eventTitle, new Date(startTime), new Date(endTime));
     
-    // Nettoyer l'état après succès
     clearTimerState();
-    return "L'événement a été créé avec succès !";
+    return T_('eventCreated');
   } catch (e) {
-    throw new Error(`Erreur: ${e.toString()}`);
+    throw new Error(e.message);
   }
 }

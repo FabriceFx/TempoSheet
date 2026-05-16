@@ -3,63 +3,8 @@
 <head>
     <base target="_top">
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <?!= include('Styles') ?>
     <style>
-        :root {
-            --primary: #1a73e8;
-            --on-primary: #fff;
-            --surface: #f8f9fa;
-            --surface-variant: #ffffff;
-            --outline: #dadce0;
-            --on-surface: #202124;
-            --radius: 12px;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --primary: #8ab4f8;
-                --on-primary: #202124;
-                --surface: #202124;
-                --surface-variant: #292a2d;
-                --outline: #5f6368;
-                --on-surface: #e8eaed;
-            }
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-        }
-
-        body {
-            font-family: 'Google Sans', Arial, sans-serif;
-            background: var(--surface);
-            padding: 16px;
-            color: var(--on-surface);
-        }
-
-        .card {
-            background: var(--surface-variant);
-            border-radius: var(--radius);
-            padding: 16px;
-            margin-bottom: 16px;
-            border: 1px solid var(--outline);
-        }
-
-        h2 {
-            color: var(--primary);
-            font-size: 18px;
-            font-weight: 500;
-            margin-top: 0;
-            margin-bottom: 12px;
-        }
-
-        p, li {
-            font-size: 14px;
-            line-height: 1.6;
-            color: var(--on-surface);
-            opacity: 0.9;
-        }
-
         ul {
             padding-left: 24px;
             margin-bottom: 16px;
@@ -68,38 +13,11 @@
         li {
             margin-bottom: 8px;
         }
-
-        strong {
-            font-weight: 500;
-            color: var(--on-surface);
-            opacity: 1;
-        }
-
-        a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .code-block {
-            background-color: var(--surface);
-            border: 1px solid var(--outline);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-family: monospace;
-            color: var(--on-surface);
-            display: inline-block;
-            margin-top: 8px;
-            font-size: 13px;
-        }
     </style>
 </head>
 <body>
     <div class="card">
-        <h2 id="helpTitle">Générateur de Rapport de Temps</h2>
+        <h2 id="helpTitle">GWorkspace Timesheet</h2>
         <p id="helpP1">Cet outil transforme votre Google Agenda en un système de suivi du temps.</p>
         
         <p><strong id="helpP2">Premiers pas :</strong></p>
@@ -108,7 +26,7 @@
             <li><span id="helpL2">Pour qu'un événement soit reconnu, le titre doit suivre ce format :</span> <br>
             <span class="code-block" id="helpL3">#NomDuProjet Description de la tâche</span></li>
             <li><em id="helpL4">La description de la tâche est optionnelle. Sans description, la tâche sera nommée "Tâches diverses".</em></li>
-            <li id="helpL5">Allez dans le menu <strong>Extensions</strong> -> <strong>Générateur de rapport de temps</strong> -> <strong>Créer un rapport</strong>.</li>
+            <li id="helpL5">Allez dans le menu <strong>Extensions</strong> -> <strong>GWorkspace Timesheet</strong> -> <strong>Créer un rapport</strong>.</li>
             <li id="helpL6">Sélectionnez le calendrier source, la période souhaitée et cliquez sur <strong>Créer le rapport</strong>.</li>
         </ul>
         
@@ -120,27 +38,27 @@
     <script>
         const i18n = {
             fr: {
-                title: 'Générateur de Rapport de Temps',
+                title: 'GWorkspace Timesheet',
                 p1: 'Cet outil transforme votre Google Agenda en un système de suivi du temps.',
                 p2: 'Premiers pas :',
                 l1: 'Créez des événements dans le Google Agenda de votre choix.',
                 l2: 'Pour qu\'un événement soit reconnu, le titre doit suivre ce format :',
                 l3: '#NomDuProjet Description de la tâche',
                 l4: 'La description de la tâche est optionnelle. Sans description, la tâche sera nommée "Tâches diverses".',
-                l5: 'Allez dans le menu Extensions -> Générateur de rapport de temps -> Créer un rapport.',
+                l5: 'Allez dans le menu Extensions -> GWorkspace Timesheet -> Créer un rapport.',
                 l6: 'Sélectionnez le calendrier source, la période souhaitée et cliquez sur Créer le rapport.',
                 p3: 'Informations complémentaires :',
                 p4: 'Si vous avez des questions ou souhaitez signaler un problème, contactez-nous :'
             },
             en: {
-                title: 'Time Report Generator',
+                title: 'GWorkspace Timesheet',
                 p1: 'This tool transforms your Google Calendar into a time tracking system.',
                 p2: 'Getting started:',
                 l1: 'Create events in your preferred Google Calendar.',
                 l2: 'For an event to be recognized, the title must follow this format:',
                 l3: '#ProjectName Task description',
                 l4: 'The task description is optional. Without a description, the task will be named "Miscellaneous tasks".',
-                l5: 'Go to the menu Extensions -> Time Report Generator -> Create report.',
+                l5: 'Go to the menu Extensions -> GWorkspace Timesheet -> Create report.',
                 l6: 'Select the source calendar, the desired period, and click on Create report.',
                 p3: 'Additional information:',
                 p4: 'If you have questions or want to report an issue, contact us:'
@@ -158,8 +76,14 @@
                 document.getElementById('helpL2').textContent = t.l2;
                 document.getElementById('helpL3').textContent = t.l3;
                 document.getElementById('helpL4').textContent = t.l4;
-                document.getElementById('helpL5').innerHTML = t.l5.replace('Extensions', '<strong>Extensions</strong>').replace('Générateur de rapport de temps', '<strong>Générateur de rapport de temps</strong>').replace('Créer un rapport', '<strong>Créer un rapport</strong>').replace('Time Report Generator', '<strong>Time Report Generator</strong>').replace('Create report', '<strong>Create report</strong>');
-                document.getElementById('helpL6').innerHTML = t.l6.replace('Créer le rapport', '<strong>Créer le rapport</strong>').replace('Create report', '<strong>Create report</strong>');
+                document.getElementById('helpL5').innerHTML = t.l5
+                    .replace('Extensions', '<strong>Extensions</strong>')
+                    .replace('GWorkspace Timesheet', '<strong>GWorkspace Timesheet</strong>')
+                    .replace('Créer un rapport', '<strong>Créer un rapport</strong>')
+                    .replace('Create report', '<strong>Create report</strong>');
+                document.getElementById('helpL6').innerHTML = t.l6
+                    .replace('Créer le rapport', '<strong>Créer le rapport</strong>')
+                    .replace('Create report', '<strong>Create report</strong>');
                 document.getElementById('helpP3').textContent = t.p3;
                 document.getElementById('helpP4').textContent = t.p4;
             }).getUserLanguage();

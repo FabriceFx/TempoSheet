@@ -1,13 +1,11 @@
 function envoyerContenuFeuilleParEmail() {
   var feuille = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var donnees = feuille.getDataRange().getValues();
-  var sujet = "Rapport de Temps : " + feuille.getName(); 
+  var sujet = T_('emailSubject') + feuille.getName(); 
   
-  // Utilise l'email de l'utilisateur actif
   var destinataire = Session.getActiveUser().getEmail(); 
   if (!destinataire) {
-    // Solution de repli si l'email ne peut pas être récupéré (ex: scripts déclenchés différemment)
-    SpreadsheetApp.getUi().alert("Impossible de récupérer l'adresse email de l'utilisateur actif.");
+    SpreadsheetApp.getUi().alert(T_('emailError'));
     return;
   }
 
@@ -25,14 +23,13 @@ function envoyerContenuFeuilleParEmail() {
 </style>
 </head>
 <body>
-<h2>Rapport de Temps : ${feuille.getName()}</h2>
-<p>Veuillez trouver ci-dessous le résumé de vos temps enregistrés :</p>
+<h2>${T_('emailSubject')}${feuille.getName()}</h2>
+<p>${T_('emailIntro')}</p>
 <table>`;
 
   donnees.forEach(function(row) {
     htmlMessage += `<tr>`;
     row.forEach(function(cell) {
-      // Afficher les nombres avec 2 décimales si possible, sinon laisser tel quel
       let formatCell = cell;
       if (typeof cell === 'number' && !Number.isInteger(cell)) {
         formatCell = cell.toFixed(2);
@@ -45,10 +42,10 @@ function envoyerContenuFeuilleParEmail() {
   htmlMessage += `
 </table>
 <br>
-<p><i>Ce rapport a été généré automatiquement par l'extension Générateur de Rapport de Temps.</i></p>
+<p><i>${T_('emailFooter')}</i></p>
 </body>
 </html>`;
 
-  GmailApp.sendEmail(destinataire, sujet, "Votre client de messagerie ne supporte pas le HTML.", {htmlBody: htmlMessage});
-  SpreadsheetApp.getActiveSpreadsheet().toast("L'email a été envoyé avec succès à " + destinataire, "Email Envoyé", 5);
+  GmailApp.sendEmail(destinataire, sujet, T_('emailFallback'), {htmlBody: htmlMessage});
+  SpreadsheetApp.getActiveSpreadsheet().toast(T_('emailSent') + destinataire, T_('emailSentTitle'), 5);
 }
