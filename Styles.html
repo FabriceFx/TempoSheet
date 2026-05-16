@@ -4,7 +4,8 @@
         --primary-hover: #1765cc;
         --on-primary: #ffffff;
         --surface: #ffffff;
-        --background: #f8f9fa;
+        --background: #ffffff;
+        --background-alt: #f8f9fa;
         --outline: #dadce0;
         --on-surface: #202124;
         --on-surface-variant: #5f6368;
@@ -15,24 +16,9 @@
         --shadow-sm: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
     }
 
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --primary: #8ab4f8;
-            --primary-hover: #aecbfa;
-            --on-primary: #202124;
-            --surface: #202124;
-            --background: #111214;
-            --outline: #3c4043;
-            --on-surface: #e8eaed;
-            --on-surface-variant: #9aa0a6;
-            --error: #f28b82;
-            --success: #81c995;
-            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15);
-        }
-        select, input[type="date"], input[type="text"] {
-            color-scheme: dark;
-        }
-    }
+    /* Désactivation du mode sombre automatique pour rester homogène avec Sheets */
+    /* Si besoin, on peut réactiver un mode sombre plus doux plus tard */
+
 
     * {
         box-sizing: border-box;

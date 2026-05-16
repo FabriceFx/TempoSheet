@@ -51,16 +51,8 @@ function afficherInfosDeveloppeur() {
           :root {
             --primary: #1a73e8;
             --on-surface: #202124;
-            --surface: #f8f9fa;
+            --surface: #ffffff;
             --outline: #dadce0;
-          }
-          @media (prefers-color-scheme: dark) {
-            :root {
-              --primary: #8ab4f8;
-              --on-surface: #e8eaed;
-              --surface: #202124;
-              --outline: #5f6368;
-            }
           }
           body {
             font-family: 'Google Sans', Arial, sans-serif;
