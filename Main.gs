@@ -23,8 +23,8 @@ const afficherBarreCreation = () => {
   try {
     const isEn = Session.getActiveUserLocale().startsWith('en');
     const html = HtmlService.createTemplateFromFile('Sidebar_Export').evaluate()
-                            .setTitle(isEn ? 'GWorkspace Timesheet' : 'GWorkspace Timesheet')
-                            .setWidth(350);
+      .setTitle(isEn ? 'Timesheet' : 'Timesheet')
+      .setWidth(350);
     SpreadsheetApp.getUi().showSidebar(html);
   } catch (erreur) {
     console.error("Erreur lors de l'affichage de la barre latérale : ", erreur);
@@ -34,7 +34,7 @@ const afficherBarreCreation = () => {
 const onOpen = (e) => {
   const ui = SpreadsheetApp.getUi();
   const isEn = Session.getActiveUserLocale().startsWith('en');
-  
+
   ui.createAddonMenu()
     .addItem(isEn ? 'Create report' : 'Créer un rapport', 'afficherBarreCreation')
     .addItem(isEn ? 'Start timer' : 'Lancer le chronomètre', 'afficherTimerSidebar')

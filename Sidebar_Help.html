@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <base target="_top">
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -15,31 +16,39 @@
         }
     </style>
 </head>
+
 <body>
     <div class="card">
         <h2 id="helpTitle">GWorkspace Timesheet</h2>
         <p id="helpP1">Cet outil transforme votre Google Agenda en un système de suivi du temps.</p>
-        
+
         <p><strong id="helpP2">Premiers pas :</strong></p>
         <ul>
             <li id="helpL1">Créez des événements dans le Google Agenda de votre choix.</li>
             <li><span id="helpL2">Pour qu'un événement soit reconnu, le titre doit suivre ce format :</span> <br>
-            <span class="code-block" id="helpL3">#NomDuProjet Description de la tâche</span><br>
-            <em id="helpL3b" style="font-size: 12px; color: var(--outline);">Le nom du projet accepte toutes les langues : #مشروع, #プロジェクト, #Проект…</em></li>
-            <li><em id="helpL4">La description de la tâche est optionnelle. Sans description, la tâche sera nommée "Tâches diverses".</em></li>
-            <li id="helpL5">Allez dans le menu <strong>Extensions</strong> -> <strong>GWorkspace Timesheet</strong> -> <strong>Créer un rapport</strong>.</li>
-            <li id="helpL6">Sélectionnez le calendrier source, la période souhaitée et cliquez sur <strong>Créer le rapport</strong>.</li>
+                <span class="code-block" id="helpL3">#NomDuProjet Description de la tâche</span><br>
+                <em id="helpL3b" style="font-size: 12px; color: var(--outline);">Le nom du projet accepte toutes les
+                    langues : #مشروع, #プロジェクト, #Проект…</em>
+            </li>
+            <li><em id="helpL4">La description de la tâche est optionnelle. Sans description, la tâche sera nommée
+                    "Tâches diverses".</em></li>
+            <li id="helpL5">Allez dans le menu <strong>Extensions</strong> -> <strong>GWorkspace Timesheet</strong> ->
+                <strong>Créer un rapport</strong>.
+            </li>
+            <li id="helpL6">Sélectionnez le calendrier source, la période souhaitée et cliquez sur <strong>Créer le
+                    rapport</strong>.</li>
         </ul>
-        
+
         <p><strong id="helpP3">Informations complémentaires :</strong></p>
         <p><span id="helpP4">Si vous avez des questions ou souhaitez signaler un problème, contactez-nous :</span> <br>
-        <a href='mailto:contact@atelier-informatique.com'>contact@atelier-informatique.com</a></p>
+            <a href='mailto:contact@atelier-informatique.com'>contact@atelier-informatique.com</a>
+        </p>
     </div>
 
     <script>
         const i18n = {
             fr: {
-                title: 'GWorkspace Timesheet',
+                title: 'Timesheet',
                 p1: 'Cet outil transforme votre Google Agenda en un système de suivi du temps.',
                 p2: 'Premiers pas :',
                 l1: 'Créez des événements dans le Google Agenda de votre choix.',
@@ -47,13 +56,13 @@
                 l3: '#NomDuProjet Description de la tâche',
                 l3b: 'Le nom du projet accepte toutes les langues : #مشروع, #プロジェクト, #Проект…',
                 l4: 'La description de la tâche est optionnelle. Sans description, la tâche sera nommée "Tâches diverses".',
-                l5: 'Allez dans le menu Extensions -> GWorkspace Timesheet -> Créer un rapport.',
+                l5: 'Allez dans le menu Extensions -> Timesheet -> Créer un rapport.',
                 l6: 'Sélectionnez le calendrier source, la période souhaitée et cliquez sur Créer le rapport.',
                 p3: 'Informations complémentaires :',
                 p4: 'Si vous avez des questions ou souhaitez signaler un problème, contactez-nous :'
             },
             en: {
-                title: 'GWorkspace Timesheet',
+                title: 'Timesheet',
                 p1: 'This tool transforms your Google Calendar into a time tracking system.',
                 p2: 'Getting started:',
                 l1: 'Create events in your preferred Google Calendar.',
@@ -61,7 +70,7 @@
                 l3: '#ProjectName Task description',
                 l3b: 'The project name supports all languages: #مشروع, #プロジェクト, #Проект…',
                 l4: 'The task description is optional. Without a description, the task will be named "Miscellaneous tasks".',
-                l5: 'Go to the menu Extensions -> GWorkspace Timesheet -> Create report.',
+                l5: 'Go to the menu Extensions -> Timesheet -> Create report.',
                 l6: 'Select the source calendar, the desired period, and click on Create report.',
                 p3: 'Additional information:',
                 p4: 'If you have questions or want to report an issue, contact us:'
@@ -69,7 +78,7 @@
         };
 
         function initLang() {
-            google.script.run.withSuccessHandler(function(l) {
+            google.script.run.withSuccessHandler(function (l) {
                 const lang = (l === 'en') ? 'en' : 'fr';
                 const t = i18n[lang];
                 document.getElementById('helpTitle').textContent = t.title;
@@ -82,7 +91,7 @@
                 document.getElementById('helpL4').textContent = t.l4;
                 document.getElementById('helpL5').innerHTML = t.l5
                     .replace('Extensions', '<strong>Extensions</strong>')
-                    .replace('GWorkspace Timesheet', '<strong>GWorkspace Timesheet</strong>')
+                    .replace('Timesheet', '<strong>Timesheet</strong>')
                     .replace('Créer un rapport', '<strong>Créer un rapport</strong>')
                     .replace('Create report', '<strong>Create report</strong>');
                 document.getElementById('helpL6').innerHTML = t.l6
@@ -96,4 +105,5 @@
         window.onload = initLang;
     </script>
 </body>
+
 </html>
