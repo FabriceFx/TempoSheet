@@ -1,14 +1,14 @@
-# GWorkspace Timesheet ⏱️📊
+# Timesheet ⏱️📊
 
 [![English](https://img.shields.io/badge/Language-English-blue)](#english-version) [![Français](https://img.shields.io/badge/Langue-Français-red)](#version-française)
-![GitHub release](https://img.shields.io/badge/version-1.0.0-blue)
+![GitHub release](https://img.shields.io/badge/version-1.1.0-blue)
 ![Apps Script](https://img.shields.io/badge/Google%20Apps%20Script-4285F4?style=flat&logo=google&logoColor=white)
 
 ---
 
 ## English Version 🇬🇧
 
-**GWorkspace Timesheet** is a free, professional, and bilingual (EN/FR) Google Workspace Add-on designed for freelancers and small teams. Why pay for external time-tracking tools when you can use what’s already there? Simply log your hours by adding `#tags` to your Google Calendar™ events. The add-on extracts your data, applies your filters, and automatically generates clean, structured timesheets directly into Google Sheets™.
+**Timesheet** is a free, professional, and bilingual (EN/FR) Google Workspace Add-on designed for freelancers and small teams. Why pay for external time-tracking tools when you can use what’s already there? Simply log your hours by adding `#tags` to your Google Calendar™ events. The add-on extracts your data, applies your filters, and automatically generates clean, structured timesheets directly into Google Sheets™.
 
 ### ✨ Features
 
@@ -32,7 +32,7 @@ For example:
 
 #### 2. Generate a Report
 1. Open a Google Sheets document.
-2. Go to **Extensions > Time Report Generator > Create report**.
+2. Go to **Extensions > Timesheet > Create report**.
 3. Select your calendar, the desired period (This week, last month, custom dates, etc.).
 4. Click **Create Report**! A new tab will be created with your aggregated timesheet.
 
@@ -40,7 +40,7 @@ For example:
 
 ## Version Française 🇫🇷
 
-**GWorkspace Timesheet** est un module complémentaire bilingue (FR/EN) et gratuit pour Google Workspace, conçu pour les freelances et les petites équipes. Pourquoi payer pour un outil externe de suivi du temps alors que tout est déjà là ? Enregistrez vos heures simplement en ajoutant des `#tags` à vos événements Google Agenda™. L'extension extrait vos données, applique vos filtres et génère automatiquement des rapports de temps structurés et précis directement dans Google Sheets™.
+**Timesheet** est un module complémentaire bilingue (FR/EN) et gratuit pour Google Workspace, conçu pour les freelances et les petites équipes. Pourquoi payer pour un outil externe de suivi du temps alors que tout est déjà là ? Enregistrez vos heures simplement en ajoutant des `#tags` à vos événements Google Agenda™. L'extension extrait vos données, applique vos filtres et génère automatiquement des rapports de temps structurés et précis directement dans Google Sheets™.
 
 ### ✨ Fonctionnalités
 
@@ -64,7 +64,7 @@ Par exemple :
 
 #### 2. Générez un rapport
 1. Ouvrez un document Google Sheets.
-2. Allez dans **Extensions > Générateur de rapport de temps > Créer un rapport**.
+2. Allez dans **Extensions > Timesheet > Créer un rapport**.
 3. Sélectionnez votre agenda, la période souhaitée (Cette semaine, mois dernier, dates personnalisées, etc.).
 4. Cliquez sur **Créer le rapport** ! Un nouvel onglet sera généré avec vos temps consolidés.
 
@@ -89,7 +89,7 @@ If you want to install this script in your own Google Workspace environment:
    ```
 4. Create a new Google Apps Script project bound to a Google Sheet, or push directly:
    ```bash
-   clasp create --type sheets --title "GWorkspace Timesheet"
+   clasp create --type sheets --title "Timesheet"
    clasp push
    ```
 
