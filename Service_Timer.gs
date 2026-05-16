@@ -40,7 +40,7 @@ function creerEvenementDansAgenda(agendaId, projectName, taskDescription, startT
     if (!calendar) {
       throw new Error(T_('calendarNotFound'));
     }
-    const eventTitle = `#${projectName.replace(/\s+/g, '')}${taskDescription ? " " + taskDescription : ""}`;
+    const eventTitle = `#${projectName.replace(/[\s\u200B-\u200F\u2028-\u202F\u2060\uFEFF]+/gu, '')}${taskDescription ? " " + taskDescription : ""}`;
     const event = calendar.createEvent(eventTitle, new Date(startTime), new Date(endTime));
     
     clearTimerState();

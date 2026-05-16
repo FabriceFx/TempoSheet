@@ -139,7 +139,7 @@ function exporterCalendrier(selectedCalendarId, selectedPeriod, dateDebut, dateF
   evenements.forEach(function(event) {
     const titre = event.getTitle();
     
-    const regex = /^#(\S+)(?:\s+(.*))?$/;
+    const regex = /^#([\p{L}\p{N}\p{M}\p{Pc}\-]+)(?:\s+(.*))?$/u;
     const match = titre.match(regex);
 
     if (match) {

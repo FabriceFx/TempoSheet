@@ -24,7 +24,8 @@
         <ul>
             <li id="helpL1">Créez des événements dans le Google Agenda de votre choix.</li>
             <li><span id="helpL2">Pour qu'un événement soit reconnu, le titre doit suivre ce format :</span> <br>
-            <span class="code-block" id="helpL3">#NomDuProjet Description de la tâche</span></li>
+            <span class="code-block" id="helpL3">#NomDuProjet Description de la tâche</span><br>
+            <em id="helpL3b" style="font-size: 12px; color: var(--outline);">Le nom du projet accepte toutes les langues : #مشروع, #プロジェクト, #Проект…</em></li>
             <li><em id="helpL4">La description de la tâche est optionnelle. Sans description, la tâche sera nommée "Tâches diverses".</em></li>
             <li id="helpL5">Allez dans le menu <strong>Extensions</strong> -> <strong>GWorkspace Timesheet</strong> -> <strong>Créer un rapport</strong>.</li>
             <li id="helpL6">Sélectionnez le calendrier source, la période souhaitée et cliquez sur <strong>Créer le rapport</strong>.</li>
@@ -44,6 +45,7 @@
                 l1: 'Créez des événements dans le Google Agenda de votre choix.',
                 l2: 'Pour qu\'un événement soit reconnu, le titre doit suivre ce format :',
                 l3: '#NomDuProjet Description de la tâche',
+                l3b: 'Le nom du projet accepte toutes les langues : #مشروع, #プロジェクト, #Проект…',
                 l4: 'La description de la tâche est optionnelle. Sans description, la tâche sera nommée "Tâches diverses".',
                 l5: 'Allez dans le menu Extensions -> GWorkspace Timesheet -> Créer un rapport.',
                 l6: 'Sélectionnez le calendrier source, la période souhaitée et cliquez sur Créer le rapport.',
@@ -57,6 +59,7 @@
                 l1: 'Create events in your preferred Google Calendar.',
                 l2: 'For an event to be recognized, the title must follow this format:',
                 l3: '#ProjectName Task description',
+                l3b: 'The project name supports all languages: #مشروع, #プロジェクト, #Проект…',
                 l4: 'The task description is optional. Without a description, the task will be named "Miscellaneous tasks".',
                 l5: 'Go to the menu Extensions -> GWorkspace Timesheet -> Create report.',
                 l6: 'Select the source calendar, the desired period, and click on Create report.',
@@ -75,6 +78,7 @@
                 document.getElementById('helpL1').textContent = t.l1;
                 document.getElementById('helpL2').textContent = t.l2;
                 document.getElementById('helpL3').textContent = t.l3;
+                document.getElementById('helpL3b').textContent = t.l3b;
                 document.getElementById('helpL4').textContent = t.l4;
                 document.getElementById('helpL5').innerHTML = t.l5
                     .replace('Extensions', '<strong>Extensions</strong>')

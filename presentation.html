@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GWorkspace Timesheet - Présentation</title>
+    <meta name="description" content="GWorkspace Timesheet : module complémentaire gratuit et bilingue pour Google Workspace. Suivi du temps via Google Agenda et génération de rapports dans Google Sheets.">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-light: #e8f0fe;
+            --primary-dark: #1557b0;
+            --text-main: #202124;
+            --text-muted: #5f6368;
+            --bg-main: #f8fafe;
+            --bg-card: #ffffff;
+            --outline: #dadce0;
+            --success: #1e8e3e;
+            --code-bg: #f1f3f4;
+            --radius: 16px;
+            --shadow: 0 1px 3px rgba(60,64,67,.15), 0 4px 8px rgba(60,64,67,.1);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #8ab4f8;
+                --primary-light: #1e2a3a;
+                --primary-dark: #669df6;
+                --text-main: #e8eaed;
+                --text-muted: #9aa0a6;
+                --bg-main: #111214;
+                --bg-card: #1e1f21;
+                --outline: #3c4043;
+                --success: #81c995;
+                --code-bg: #2d2f31;
+                --shadow: 0 1px 3px rgba(0,0,0,.3), 0 4px 8px rgba(0,0,0,.2);
+            }
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Google Sans', Arial, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.7;
+        }
+
+        /* --- NAV --- */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--outline);
+            backdrop-filter: blur(12px);
+            padding: 0 20px;
+        }
+        nav .nav-inner {
+            max-width: 960px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            height: 56px; gap: 8px;
+        }
+        nav .logo {
+            font-weight: 700; font-size: 1rem; color: var(--primary);
+            display: flex; align-items: center; gap: 6px; text-decoration: none;
+        }
+        nav .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+        nav .nav-links a {
+            color: var(--text-muted); text-decoration: none; font-size: .85rem;
+            padding: 6px 12px; border-radius: 20px; transition: all .2s;
+        }
+        nav .nav-links a:hover { background: var(--primary-light); color: var(--primary); }
+        .lang-toggle {
+            background: var(--primary-light); color: var(--primary);
+            border: 1px solid var(--outline); border-radius: 20px;
+            padding: 4px 14px; font: 500 .85rem/1 'Google Sans',sans-serif;
+            cursor: pointer; transition: all .2s;
+        }
+        .lang-toggle:hover { background: var(--primary); color: #fff; }
+
+        /* --- HEADER --- */
+        header {
+            background: linear-gradient(135deg, #1a73e8 0%, #1557b0 50%, #0d47a1 100%);
+            color: #fff; padding: 80px 20px 60px; text-align: center;
+            position: relative; overflow: hidden;
+        }
+        header::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(circle at 30% 40%, rgba(255,255,255,.12) 0%, transparent 60%);
+        }
+        .header-inner { max-width: 720px; margin: 0 auto; position: relative; z-index: 1; }
+        header h1 {
+            font-size: 2.8rem; font-weight: 700; margin-bottom: 16px;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+        }
+        header .subtitle { font-size: 1.15rem; opacity: .92; margin-bottom: 28px; }
+        .badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .badge {
+            padding: 6px 16px; background: rgba(255,255,255,.18);
+            border-radius: 20px; font-size: .88rem; font-weight: 500;
+            backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,.15);
+        }
+
+        /* --- MAIN --- */
+        main { max-width: 960px; margin: 48px auto; padding: 0 20px; }
+        section {
+            background: var(--bg-card); border: 1px solid var(--outline);
+            border-radius: var(--radius); padding: 36px; margin-bottom: 32px;
+            box-shadow: var(--shadow);
+            animation: fadeUp .5s ease both;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        section:nth-child(2) { animation-delay: .08s; }
+        section:nth-child(3) { animation-delay: .16s; }
+        section:nth-child(4) { animation-delay: .24s; }
+        section:nth-child(5) { animation-delay: .32s; }
+        section:nth-child(6) { animation-delay: .40s; }
+
+        h2 {
+            color: var(--primary); font-size: 1.4rem; font-weight: 500;
+            margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+            border-bottom: 2px solid var(--primary-light); padding-bottom: 10px;
+        }
+        p { margin-bottom: 14px; font-size: 1.02rem; }
+
+        /* --- FEATURES --- */
+        .features-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+            gap: 16px; margin-top: 8px;
+        }
+        .feature-card {
+            background: var(--bg-main); border: 1px solid var(--outline);
+            border-radius: 12px; padding: 20px;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .feature-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+        .feature-card .icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: var(--primary-light); color: var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 12px; font-size: 24px;
+        }
+        .feature-card h3 { font-size: 1rem; font-weight: 500; margin-bottom: 6px; }
+        .feature-card p { font-size: .92rem; color: var(--text-muted); margin: 0; }
+
+        /* --- STEPS --- */
+        .steps { display: flex; flex-direction: column; gap: 20px; margin-top: 16px; }
+        .step {
+            background: var(--bg-main); border: 1px solid var(--outline);
+            border-radius: 12px; padding: 24px; display: flex; gap: 20px; align-items: flex-start;
+        }
+        .step-number {
+            min-width: 44px; height: 44px; border-radius: 50%;
+            background: var(--primary); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1.2rem; flex-shrink: 0;
+        }
+        .step h3 { font-size: 1.05rem; font-weight: 500; margin-bottom: 6px; color: var(--text-main); }
+        .step p { margin: 0; font-size: .95rem; color: var(--text-muted); }
+        blockquote {
+            background: var(--primary-light); border-left: 4px solid var(--primary);
+            padding: 12px 16px; margin: 12px 0 0; border-radius: 0 8px 8px 0;
+            font-family: monospace; font-size: .95rem;
+        }
+
+        /* --- TECH --- */
+        .tech-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+            gap: 14px; margin-top: 16px;
+        }
+        .tech-item {
+            border: 1px solid var(--outline); border-radius: 10px;
+            padding: 18px; background: var(--bg-main);
+        }
+        .tech-item strong { display: block; margin-bottom: 6px; font-size: .95rem; }
+        .tech-item p { font-size: .88rem; color: var(--text-muted); margin: 0; }
+
+        /* --- CODE --- */
+        pre {
+            background: var(--code-bg); border: 1px solid var(--outline);
+            border-radius: 10px; padding: 20px; overflow-x: auto;
+            font-family: 'Roboto Mono', monospace; font-size: .88rem;
+            line-height: 1.6; margin: 16px 0 0;
+        }
+        code { font-family: monospace; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-size: .92rem; }
+
+        /* --- ABOUT --- */
+        .about-content { text-align: center; }
+        .about-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+        .about-links a {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 12px 24px; border-radius: 24px; text-decoration: none;
+            font-weight: 500; font-size: .95rem; transition: transform .2s, box-shadow .2s;
+        }
+        .about-links a:hover { transform: scale(1.03); }
+        .btn-site { background: var(--primary); color: #fff; }
+        .btn-linkedin { background: #0A66C2; color: #fff; }
+        .btn-paypal { background: #FFB830; color: #202124; }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center; padding: 32px 20px;
+            color: var(--text-muted); font-size: .9rem;
+            border-top: 1px solid var(--outline);
+        }
+        footer a { color: var(--primary); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.8rem; }
+            header { padding: 50px 16px 40px; }
+            section { padding: 24px; }
+            .step { flex-direction: column; gap: 12px; }
+            nav .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <a href="#" class="logo">
+            <span class="material-icons-round">timeline</span> GWorkspace Timesheet
+        </a>
+        <div class="nav-links">
+            <a href="#features" data-fr="Fonctionnalités" data-en="Features">Fonctionnalités</a>
+            <a href="#how-it-works" data-fr="Fonctionnement" data-en="How it works">Fonctionnement</a>
+            <a href="#technical" data-fr="Architecture" data-en="Architecture">Architecture</a>
+            <a href="#installation" data-fr="Installation" data-en="Installation">Installation</a>
+        </div>
+        <button class="lang-toggle" onclick="toggleLang()" title="Switch language">FR / EN</button>
+    </div>
+</nav>
+
+<header>
+    <div class="header-inner">
+        <h1>
+            <span class="material-icons-round" style="font-size:2.8rem">timeline</span>
+            GWorkspace Timesheet
+        </h1>
+        <p class="subtitle" data-fr="Module complémentaire bilingue et gratuit pour Google Workspace. Automatisez le suivi du temps via Google Agenda™ et Google Sheets™." data-en="Free, bilingual Google Workspace add-on. Automate time tracking via Google Calendar™ and Google Sheets™.">Module complémentaire bilingue et gratuit pour Google Workspace. Automatisez le suivi du temps via Google Agenda™ et Google Sheets™.</p>
+        <div class="badges">
+            <span class="badge">Version 1.0.0</span>
+            <span class="badge">Open Source · MIT</span>
+            <span class="badge" data-fr="🌍 FR / EN" data-en="🌍 EN / FR">🌍 FR / EN</span>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section id="overview">
+        <h2><span class="material-icons-round">info</span> <span data-fr="Présentation générale" data-en="Overview">Présentation générale</span></h2>
+        <p data-fr="GWorkspace Timesheet est une solution légère et professionnelle destinée aux freelances et aux petites équipes. Pourquoi payer pour un outil externe alors que l'infrastructure Google Workspace dispose déjà de tout le nécessaire ?" data-en="GWorkspace Timesheet is a lightweight, professional solution for freelancers and small teams. Why pay for an external tool when Google Workspace already has everything you need?">GWorkspace Timesheet est une solution légère et professionnelle destinée aux freelances et aux petites équipes. Pourquoi payer pour un outil externe alors que l'infrastructure Google Workspace dispose déjà de tout le nécessaire ?</p>
+        <p data-fr="Enregistrez vos heures en ajoutant des <code>#tags</code> à vos événements Google Agenda. L'extension extrait vos données et génère automatiquement des rapports structurés dans Google Sheets." data-en="Log your hours by adding <code>#tags</code> to your Google Calendar events. The add-on extracts your data and automatically generates structured reports in Google Sheets.">Enregistrez vos heures en ajoutant des <code>#tags</code> à vos événements Google Agenda. L'extension extrait vos données et génère automatiquement des rapports structurés dans Google Sheets.</p>
+    </section>
+
+    <section id="features">
+        <h2><span class="material-icons-round">auto_awesome</span> <span data-fr="Fonctionnalités clés" data-en="Key Features">Fonctionnalités clés</span></h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon"><span class="material-icons-round">event</span></div>
+                <h3 data-fr="Google Agenda™ natif" data-en="Native Google Calendar™">Google Agenda™ natif</h3>
+                <p data-fr="Suivez votre temps directement depuis votre agenda. Aucun tableau de bord externe requis." data-en="Track time directly from your calendar. No external dashboard required.">Suivez votre temps directement depuis votre agenda. Aucun tableau de bord externe requis.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon"><span class="material-icons-round">tag</span></div>
+                <h3 data-fr="Tags intelligents" data-en="Smart Tags">Tags intelligents</h3>
+                <p data-fr="Format simple : <code>#projet</code> dans le titre. Supporte toutes les langues : <code>#مشروع</code>, <code>#プロジェクト</code>…" data-en="Simple format: <code>#project</code> in the title. Supports all languages: <code>#مشروع</code>, <code>#プロジェクト</code>…">Format simple : <code>#projet</code> dans le titre. Supporte toutes les langues : <code>#مشروع</code>, <code>#プロジェクト</code>…</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon"><span class="material-icons-round">timer</span></div>
+                <h3 data-fr="Chronomètre intégré" data-en="Built-in Timer">Chronomètre intégré</h3>
+                <p data-fr="Barre latérale Material Design 3 avec démarrage/arrêt en temps réel et raccourci Espace." data-en="Material Design 3 sidebar with real-time start/stop and Space bar shortcut.">Barre latérale Material Design 3 avec démarrage/arrêt en temps réel et raccourci Espace.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon"><span class="material-icons-round">description</span></div>
+                <h3 data-fr="Export en un clic" data-en="One-click Export">Export en un clic</h3>
+                <p data-fr="Rapport consolidé généré dans un nouvel onglet Google Sheets avec mise en forme automatique." data-en="Consolidated report generated in a new Google Sheets tab with automatic formatting.">Rapport consolidé généré dans un nouvel onglet Google Sheets avec mise en forme automatique.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon"><span class="material-icons-round">email</span></div>
+                <h3 data-fr="Envoi par e-mail" data-en="Email Delivery">Envoi par e-mail</h3>
+                <p data-fr="Envoyez votre rapport directement par e-mail au format HTML depuis le menu de l'extension." data-en="Send your report directly by email in HTML format from the add-on menu.">Envoyez votre rapport directement par e-mail au format HTML depuis le menu de l'extension.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon"><span class="material-icons-round">dark_mode</span></div>
+                <h3 data-fr="Mode sombre automatique" data-en="Auto Dark Mode">Mode sombre automatique</h3>
+                <p data-fr="L'interface s'adapte automatiquement aux préférences visuelles de votre système." data-en="The interface automatically adapts to your system's visual preferences.">L'interface s'adapte automatiquement aux préférences visuelles de votre système.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works">
+        <h2><span class="material-icons-round">route</span> <span data-fr="Comment ça marche ?" data-en="How does it work?">Comment ça marche ?</span></h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div>
+                    <h3 data-fr="Enregistrez votre temps" data-en="Track your time">Enregistrez votre temps</h3>
+                    <p data-fr="Créez des événements dans votre Google Agenda. Structurez le titre avec un tag suivi d'une description optionnelle :" data-en="Create events in your Google Calendar. Structure the title with a tag followed by an optional description:">Créez des événements dans votre Google Agenda. Structurez le titre avec un tag suivi d'une description optionnelle :</p>
+                    <blockquote>#projet1 Phase de recherche et développement</blockquote>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div>
+                    <h3 data-fr="Générez le rapport" data-en="Generate the report">Générez le rapport</h3>
+                    <p data-fr="Ouvrez Google Sheets → <strong>Extensions</strong> → <strong>GWorkspace Timesheet</strong> → <strong>Créer un rapport</strong>. Choisissez calendrier et période, puis validez." data-en="Open Google Sheets → <strong>Extensions</strong> → <strong>GWorkspace Timesheet</strong> → <strong>Create report</strong>. Choose calendar and period, then confirm.">Ouvrez Google Sheets → <strong>Extensions</strong> → <strong>GWorkspace Timesheet</strong> → <strong>Créer un rapport</strong>. Choisissez calendrier et période, puis validez.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div>
+                    <h3 data-fr="Partagez le résultat" data-en="Share the result">Partagez le résultat</h3>
+                    <p data-fr="Envoyez le rapport par e-mail au format HTML ou exportez-le en PDF depuis Google Sheets." data-en="Send the report by email in HTML format or export it as PDF from Google Sheets.">Envoyez le rapport par e-mail au format HTML ou exportez-le en PDF depuis Google Sheets.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="technical">
+        <h2><span class="material-icons-round">architecture</span> <span data-fr="Architecture technique" data-en="Technical Architecture">Architecture technique</span></h2>
+        <p data-fr="Le projet repose entièrement sur l'écosystème Google Apps Script, sans hébergement externe ni base de données tierce." data-en="The project runs entirely on the Google Apps Script ecosystem, with no external hosting or third-party database.">Le projet repose entièrement sur l'écosystème Google Apps Script, sans hébergement externe ni base de données tierce.</p>
+        <div class="tech-grid">
+            <div class="tech-item">
+                <strong>CalendarApp</strong>
+                <p data-fr="Lecture des événements et création via le chronomètre." data-en="Event reading and creation via the timer.">Lecture des événements et création via le chronomètre.</p>
+            </div>
+            <div class="tech-item">
+                <strong>SpreadsheetApp</strong>
+                <p data-fr="Génération et mise en forme des rapports." data-en="Report generation and formatting.">Génération et mise en forme des rapports.</p>
+            </div>
+            <div class="tech-item">
+                <strong>GmailApp</strong>
+                <p data-fr="Envoi du rapport par e-mail HTML." data-en="Sending reports by HTML email.">Envoi du rapport par e-mail HTML.</p>
+            </div>
+            <div class="tech-item">
+                <strong>PropertiesService</strong>
+                <p data-fr="Persistance de l'état du chronomètre entre les sessions." data-en="Timer state persistence between sessions.">Persistance de l'état du chronomètre entre les sessions.</p>
+            </div>
+            <div class="tech-item">
+                <strong>HTML5 + i18n</strong>
+                <p data-fr="Interface bilingue côté client et serveur (FR/EN)." data-en="Bilingual client and server-side interface (EN/FR).">Interface bilingue côté client et serveur (FR/EN).</p>
+            </div>
+            <div class="tech-item">
+                <strong>V8 Runtime</strong>
+                <p data-fr="Support Unicode complet avec regex <code>\\p{L}</code> pour tous les alphabets." data-en="Full Unicode support with <code>\\p{L}</code> regex for all scripts.">Support Unicode complet avec regex <code>\p{L}</code> pour tous les alphabets.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="installation">
+        <h2><span class="material-icons-round">terminal</span> <span data-fr="Déploiement développeur" data-en="Developer Deployment">Déploiement développeur</span></h2>
+        <p data-fr="Pour déployer ce script sur votre propre environnement avec l'outil <a href='https://github.com/google/clasp' target='_blank'>Clasp</a> :" data-en="To deploy this script to your own environment using <a href='https://github.com/google/clasp' target='_blank'>Clasp</a>:">Pour déployer ce script sur votre propre environnement avec l'outil <a href="https://github.com/google/clasp" target="_blank">Clasp</a> :</p>
+        <pre><code># 1. Cloner le dépôt
+git clone https://github.com/FabriceFx/gworkspace-timesheet.git
+
+# 2. Installer clasp
+npm install -g @google/clasp
+
+# 3. Se connecter à Google
+clasp login
+
+# 4. Créer et déployer
+clasp create --type sheets --title "GWorkspace Timesheet"
+clasp push</code></pre>
+    </section>
+
+    <section id="about">
+        <div class="about-content">
+            <h2 style="justify-content:center"><span class="material-icons-round">person</span> <span data-fr="À propos" data-en="About">À propos</span></h2>
+            <p data-fr="Projet open source sous licence MIT, développé par <strong>Fabrice Faucheux</strong>." data-en="Open source project under MIT license, developed by <strong>Fabrice Faucheux</strong>.">Projet open source sous licence MIT, développé par <strong>Fabrice Faucheux</strong>.</p>
+            <div class="about-links">
+                <a href="https://atelier-informatique.com" target="_blank" class="btn-site">
+                    <span class="material-icons-round">language</span> L'atelier informatique
+                </a>
+                <a href="https://www.linkedin.com/in/fabricefaucheux" target="_blank" class="btn-linkedin">
+                    <span class="material-icons-round">work</span> LinkedIn
+                </a>
+                <a href="https://paypal.me/FFaucheux?country.x=FR&locale.x=fr_FR" target="_blank" class="btn-paypal">
+                    <span class="material-icons-round">volunteer_activism</span>
+                    <span data-fr="Soutenir via PayPal" data-en="Support via PayPal">Soutenir via PayPal</span>
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2026 GWorkspace Timesheet · <span data-fr="Développé par" data-en="Developed by">Développé par</span> <a href="https://atelier-informatique.com" target="_blank">L'atelier informatique</a></p>
+</footer>
+
+<script>
+    let currentLang = 'fr';
+    function toggleLang() {
+        currentLang = currentLang === 'fr' ? 'en' : 'fr';
+        document.querySelectorAll('[data-fr]').forEach(el => {
+            el.innerHTML = el.getAttribute('data-' + currentLang);
+        });
+        document.documentElement.lang = currentLang;
+    }
+</script>
+</body>
+</html>
