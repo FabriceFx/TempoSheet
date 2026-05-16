@@ -1,28 +1,35 @@
 <style>
     :root {
         --primary: #1a73e8;
-        --on-primary: #fff;
-        --surface: #f8f9fa;
-        --surface-variant: #ffffff;
+        --primary-hover: #1765cc;
+        --on-primary: #ffffff;
+        --surface: #ffffff;
+        --background: #f8f9fa;
         --outline: #dadce0;
         --on-surface: #202124;
+        --on-surface-variant: #5f6368;
         --error: #d93025;
         --success: #1e8e3e;
-        --radius: 12px;
+        --radius: 8px;
+        --radius-sm: 4px;
+        --shadow-sm: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
     }
 
     @media (prefers-color-scheme: dark) {
         :root {
             --primary: #8ab4f8;
+            --primary-hover: #aecbfa;
             --on-primary: #202124;
             --surface: #202124;
-            --surface-variant: #292a2d;
-            --outline: #5f6368;
+            --background: #111214;
+            --outline: #3c4043;
             --on-surface: #e8eaed;
+            --on-surface-variant: #9aa0a6;
             --error: #f28b82;
             --success: #81c995;
+            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15);
         }
-        select, input[type="date"] {
+        select, input[type="date"], input[type="text"] {
             color-scheme: dark;
         }
     }
@@ -30,137 +37,176 @@
     * {
         box-sizing: border-box;
         margin: 0;
+        padding: 0;
     }
 
     body {
-        font-family: 'Google Sans', Arial, sans-serif;
-        background: var(--surface);
+        font-family: 'Google Sans', Roboto, Arial, sans-serif;
+        background: var(--background);
         padding: 16px;
         color: var(--on-surface);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
     }
 
     .card {
-        background: var(--surface-variant);
+        background: var(--surface);
         border-radius: var(--radius);
-        padding: 16px;
+        padding: 20px;
         margin-bottom: 16px;
         border: 1px solid var(--outline);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 
     h2 {
-        color: var(--primary);
-        font-size: 18px;
+        color: var(--on-surface);
+        font-size: 16px;
         font-weight: 500;
-        margin-top: 0;
-        margin-bottom: 12px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
     label {
-        font-size: 12px;
+        font-size: 13px;
         color: var(--on-surface);
-        margin-left: 2px;
         display: block;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
         font-weight: 500;
     }
 
     select, input[type="text"], input[type="date"] {
         width: 100%;
-        padding: 12px;
+        height: 40px;
+        padding: 0 12px;
         margin-bottom: 16px;
-        border-radius: 8px;
+        border-radius: var(--radius-sm);
         border: 1px solid var(--outline);
         background: var(--surface);
         color: var(--on-surface);
         font-size: 14px;
         font-family: inherit;
-        transition: border-color 0.2s;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         outline: none;
+    }
+
+    select:hover, input[type="text"]:hover, input[type="date"]:hover {
+        border-color: var(--on-surface-variant);
     }
 
     select:focus, input[type="text"]:focus, input[type="date"]:focus {
         border-color: var(--primary);
+        border-width: 2px;
+        padding: 0 11px; /* Adjust for border width change */
     }
 
     .btn {
         width: 100%;
-        height: 48px;
-        border-radius: 24px;
+        height: 36px;
+        border-radius: 18px;
         border: none;
         font-weight: 500;
         cursor: pointer;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
         font-family: inherit;
         font-size: 14px;
-        transition: background 0.2s;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 0 24px;
+        user-select: none;
     }
 
     .btn-primary {
         background: var(--primary);
         color: var(--on-primary);
+        box-shadow: none;
     }
 
     .btn-primary:hover:not(:disabled) {
-        opacity: 0.9;
+        background: var(--primary-hover);
+        box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+    }
+
+    .btn-primary:active:not(:disabled) {
+        box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3);
     }
 
     .btn-danger {
-        background: var(--error);
-        color: white;
+        background: transparent;
+        color: var(--error);
+        border: 1px solid var(--outline);
+    }
+
+    .btn-danger:hover:not(:disabled) {
+        background: #fce8e6;
+        border-color: #fce8e6;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .btn-danger:hover:not(:disabled) {
+            background: rgba(242, 139, 130, 0.15);
+            border-color: transparent;
+        }
     }
 
     .btn:disabled {
-        opacity: 0.5;
+        opacity: 0.38;
         cursor: not-allowed;
+        pointer-events: none;
     }
 
     kbd {
         padding: 2px 6px;
         border-radius: 4px;
-        background: var(--outline);
-        color: var(--surface);
-        font-size: 10px;
-        font-family: monospace;
+        background: var(--background);
+        border: 1px solid var(--outline);
+        color: var(--on-surface-variant);
+        font-size: 11px;
+        font-family: 'Roboto Mono', monospace;
+        vertical-align: middle;
     }
 
     .loading-container {
         display: none;
         justify-content: center;
         align-items: center;
-        margin-top: 16px;
+        margin: 16px 0;
     }
 
     .spinner {
-        border: 3px solid var(--outline);
-        border-top: 3px solid var(--primary);
+        border: 2px solid var(--outline);
+        border-top: 2px solid var(--primary);
         border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        animation: spin 1s linear infinite;
+        width: 20px;
+        height: 20px;
+        animation: spin 0.8s linear infinite;
     }
 
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes spin { 
+        0% { transform: rotate(0deg); } 
+        100% { transform: rotate(360deg); } 
+    }
 
     #message {
         margin-top: 12px;
         text-align: center;
         font-size: 13px;
+        min-height: 1.5em;
     }
 
     p, li {
-        font-size: 14px;
+        font-size: 13px;
         line-height: 1.6;
-        color: var(--on-surface);
-        opacity: 0.9;
+        color: var(--on-surface-variant);
+        margin-bottom: 8px;
     }
 
     strong {
         font-weight: 500;
         color: var(--on-surface);
-        opacity: 1;
     }
 
     a {
@@ -173,20 +219,51 @@
     }
 
     .code-block {
-        background-color: var(--surface);
+        background-color: var(--background);
         border: 1px solid var(--outline);
         padding: 8px 12px;
-        border-radius: 6px;
-        font-family: monospace;
+        border-radius: var(--radius-sm);
+        font-family: 'Roboto Mono', monospace;
         color: var(--on-surface);
-        display: inline-block;
-        margin-top: 8px;
-        font-size: 13px;
+        display: block;
+        margin: 12px 0;
+        font-size: 12px;
+        white-space: pre-wrap;
+        word-break: break-all;
+    }
+
+    /* Custom Scrollbar for a cleaner look */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--outline);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--on-surface-variant);
     }
 
     .dropdown-container, .date-container {
         display: flex;
         flex-direction: column;
-        margin-bottom: 16px;
+        margin-bottom: 8px;
+    }
+
+    /* Animation for messages */
+    .fade-in {
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>

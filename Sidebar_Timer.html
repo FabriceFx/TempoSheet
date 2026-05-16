@@ -132,7 +132,11 @@
         var msgDiv = document.getElementById('message');
         msgDiv.textContent = msg;
         msgDiv.style.color = isError ? 'var(--error)' : 'var(--success)';
-        setTimeout(function() { msgDiv.textContent = ''; }, 5000);
+        msgDiv.classList.add('fade-in');
+        setTimeout(function() { 
+            msgDiv.textContent = ''; 
+            msgDiv.classList.remove('fade-in');
+        }, 5000);
     }
 
     function handleStartStop() {

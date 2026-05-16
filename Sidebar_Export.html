@@ -164,7 +164,11 @@
         function showMessage(msg) {
             var msgDiv = document.getElementById('message');
             msgDiv.textContent = msg;
-            setTimeout(function() { msgDiv.textContent = ''; }, 5000);
+            msgDiv.classList.add('fade-in');
+            setTimeout(function() { 
+                msgDiv.textContent = ''; 
+                msgDiv.classList.remove('fade-in');
+            }, 5000);
         }
 
         window.onload = function() {
