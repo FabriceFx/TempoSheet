@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --on-primary: #fff;
+            --surface: #f8f9fa;
+            --surface-variant: #ffffff;
+            --outline: #dadce0;
+            --on-surface: #202124;
+            --error: #d93025;
+            --success: #1e8e3e;
+            --radius: 12px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #8ab4f8;
+                --on-primary: #202124;
+                --surface: #202124;
+                --surface-variant: #292a2d;
+                --outline: #5f6368;
+                --on-surface: #e8eaed;
+                --error: #f28b82;
+                --success: #81c995;
+            }
+            select, input[type="date"] {
+                color-scheme: dark;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Google Sans', Arial, sans-serif;
+            background: var(--surface);
+            padding: 16px;
+            color: var(--on-surface);
+        }
+
+        .card {
+            background: var(--surface-variant);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--outline);
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            margin-top: 0;
+        }
+
+        p {
+            font-size: 13px;
+            color: var(--on-surface);
+            opacity: 0.8;
+            margin-bottom: 24px;
+        }
+
+        .dropdown-container, .date-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 16px;
+        }
+
+        label {
+            margin: 0 0 6px 0;
+            color: var(--on-surface);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        select, input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--surface);
+            border: 1px solid var(--outline);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--on-surface);
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        select:focus, input[type="date"]:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            height: 48px;
+            border-radius: 24px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: background 0.2s;
+            background: var(--primary);
+            color: var(--on-primary);
+            margin-top: 16px;
+        }
+
+        .btn:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading-container {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            margin-top: 16px;
+        }
+        .spinner {
+            border: 3px solid var(--outline);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #message {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--error);
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 id="lblTitle">Générer un rapport</h2>
+        <p id="lblSubtitle">Sélectionnez un calendrier et une période pour créer votre feuille de temps.</p>
+        
+        <div class="dropdown-container">
+            <label for="calendrierSelectionne" id="lblCalendar">Calendrier source</label>
+            <select id="calendrierSelectionne">
+                <option value="">Chargement...</option>
+            </select>
+        </div>
+        
+        <div class="dropdown-container">
+            <label for="periodeExtraction" id="lblPeriod">Période</label>
+            <select id="periodeExtraction" onchange="toggleCustomDateFields()">
+                <option value="cetteSemaine" id="optThisWeek">Cette semaine</option>
+                <option value="laSemaineDerniere" id="optLastWeek">La semaine dernière</option>
+                <option value="ceMois" id="optThisMonth">Ce mois</option>
+                <option value="leDernierMois" id="optLastMonth">Le mois dernier</option>
+                <option value="cetteAnnee" id="optThisYear">Cette année</option>
+                <option value="periodeSpecifiee" id="optCustom">Période spécifiée</option>
+            </select>
+        </div>
+        
+        <div id="customDateFields" style="display:none;">
+            <div class="date-container">
+                <label for="dateDebut" id="lblStart">Date de début</label>
+                <input type="date" id="dateDebut">
+            </div>
+            <div class="date-container">
+                <label for="dateFin" id="lblEnd">Date de fin</label>
+                <input type="date" id="dateFin">
+            </div>
+        </div>
+        
+        <button id="btnCreer" class="btn">
+            <span class="material-icons-round">description</span>
+            <span id="btnText">Créer le rapport</span>
+        </button>
+        <div class="loading-container" id="loadingIndicator">
+            <div class="spinner"></div>
+        </div>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        var lang = 'fr';
+        
+        const i18n = {
+            fr: {
+                title: 'Générer un rapport',
+                subtitle: 'Sélectionnez un calendrier et une période pour créer votre feuille de temps.',
+                calendar: 'Calendrier source',
+                loading: 'Chargement...',
+                period: 'Période',
+                thisWeek: 'Cette semaine',
+                lastWeek: 'La semaine dernière',
+                thisMonth: 'Ce mois',
+                lastMonth: 'Le mois dernier',
+                thisYear: 'Cette année',
+                custom: 'Période spécifiée',
+                start: 'Date de début',
+                end: 'Date de fin',
+                btnCreate: 'Créer le rapport',
+                errCal: 'Veuillez sélectionner un calendrier.',
+                errDates: 'Veuillez spécifier les dates de début et de fin.',
+                error: 'Erreur : '
+            },
+            en: {
+                title: 'Generate Report',
+                subtitle: 'Select a calendar and a period to create your timesheet.',
+                calendar: 'Source Calendar',
+                loading: 'Loading...',
+                period: 'Period',
+                thisWeek: 'This week',
+                lastWeek: 'Last week',
+                thisMonth: 'This month',
+                lastMonth: 'Last month',
+                thisYear: 'This year',
+                custom: 'Custom period',
+                start: 'Start Date',
+                end: 'End Date',
+                btnCreate: 'Create Report',
+                errCal: 'Please select a calendar.',
+                errDates: 'Please specify start and end dates.',
+                error: 'Error: '
+            }
+        };
+
+        function translateApp() {
+            const t = i18n[lang];
+            document.getElementById('lblTitle').textContent = t.title;
+            document.getElementById('lblSubtitle').textContent = t.subtitle;
+            document.getElementById('lblCalendar').textContent = t.calendar;
+            document.getElementById('lblPeriod').textContent = t.period;
+            document.getElementById('optThisWeek').textContent = t.thisWeek;
+            document.getElementById('optLastWeek').textContent = t.lastWeek;
+            document.getElementById('optThisMonth').textContent = t.thisMonth;
+            document.getElementById('optLastMonth').textContent = t.lastMonth;
+            document.getElementById('optThisYear').textContent = t.thisYear;
+            document.getElementById('optCustom').textContent = t.custom;
+            document.getElementById('lblStart').textContent = t.start;
+            document.getElementById('lblEnd').textContent = t.end;
+            document.getElementById('btnText').textContent = t.btnCreate;
+            
+            var option = document.querySelector('#calendrierSelectionne option[value=""]');
+            if(option) option.textContent = t.loading;
+        }
+
+        function initLang() {
+            google.script.run.withSuccessHandler(function(l) {
+                lang = (l === 'en') ? 'en' : 'fr';
+                translateApp();
+            }).getUserLanguage();
+        }
+
+        function toggleCustomDateFields() {
+            var selection = document.getElementById('periodeExtraction').value;
+            var customDateFields = document.getElementById('customDateFields');
+            if (selection === 'periodeSpecifiee') {
+                customDateFields.style.display = 'block';
+            } else {
+                customDateFields.style.display = 'none';
+            }
+        }
+
+        function toggleLoading(show) {
+            document.getElementById('loadingIndicator').style.display = show ? 'flex' : 'none';
+            document.getElementById('btnCreer').style.display = show ? 'none' : 'flex';
+        }
+
+        function showMessage(msg) {
+            var msgDiv = document.getElementById('message');
+            msgDiv.textContent = msg;
+            setTimeout(function() { msgDiv.textContent = ''; }, 5000);
+        }
+
+        window.onload = function() {
+            initLang();
+            
+            google.script.run.withSuccessHandler(function(calendriers) {
+                var select = document.getElementById('calendrierSelectionne');
+                select.innerHTML = '';
+                calendriers.forEach(function(calendrier) {
+                    var option = document.createElement('option');
+                    option.value = calendrier.id;
+                    option.textContent = calendrier.nom;
+                    select.appendChild(option);
+                });
+            }).obtenirCalendriers();
+
+            document.getElementById('btnCreer').onclick = function() {
+                const t = i18n[lang];
+                var selectedCalendarId = document.getElementById('calendrierSelectionne').value;
+                var selectedPeriod = document.getElementById('periodeExtraction').value;
+                var dateDebut = '';
+                var dateFin = '';
+                
+                if (!selectedCalendarId) {
+                    showMessage(t.errCal);
+                    return;
+                }
+
+                if (selectedPeriod === 'periodeSpecifiee') {
+                    dateDebut = document.getElementById('dateDebut').value;
+                    dateFin = document.getElementById('dateFin').value;
+                    if (!dateDebut || !dateFin) {
+                        showMessage(t.errDates);
+                        return;
+                    }
+                }
+
+                toggleLoading(true);
+
+                google.script.run
+                    .withSuccessHandler(function() {
+                        toggleLoading(false);
+                        google.script.host.close();
+                    })
+                    .withFailureHandler(function(error) {
+                        toggleLoading(false);
+                        showMessage(t.error + error.message);
+                    })
+                    .exporterCalendrier(selectedCalendarId, selectedPeriod, dateDebut, dateFin);
+            };
+        };
+    </script>
+</body>
+</html>

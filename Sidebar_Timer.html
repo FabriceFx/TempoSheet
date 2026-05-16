@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --on-primary: #fff;
+            --surface: #f8f9fa;
+            --surface-variant: #ffffff;
+            --outline: #dadce0;
+            --on-surface: #202124;
+            --error: #d93025;
+            --success: #1e8e3e;
+            --radius: 12px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #8ab4f8;
+                --on-primary: #202124;
+                --surface: #202124;
+                --surface-variant: #292a2d;
+                --outline: #5f6368;
+                --on-surface: #e8eaed;
+                --error: #f28b82;
+                --success: #81c995;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Google Sans', Arial, sans-serif;
+            background: var(--surface);
+            padding: 16px;
+            color: var(--on-surface);
+        }
+
+        .card {
+            background: var(--surface-variant);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--outline);
+        }
+
+        label {
+            font-size: 12px;
+            color: var(--on-surface);
+            margin-left: 2px;
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--outline);
+            background: var(--surface);
+            color: var(--on-surface);
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        select:focus, input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        #timer {
+            font-size: 42px;
+            font-weight: 500;
+            margin: 16px 0;
+            color: var(--primary);
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .btn {
+            width: 100%;
+            height: 48px;
+            border-radius: 24px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--on-primary);
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        kbd {
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--outline);
+            color: var(--surface);
+            font-size: 10px;
+            font-family: monospace;
+        }
+
+        .loading-container {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            margin-top: 16px;
+        }
+        .spinner {
+            border: 3px solid var(--outline);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #message {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div id="timer">00:00:00</div>
+        <div style="text-align:center; margin-bottom: 8px; font-size: 11px; color: var(--outline);">
+            <kbd>Espace</kbd> <span id="lblKbSpace">Démarrer / Arrêter</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <label for="agendaList" id="lblAgenda">Agenda cible</label>
+        <select id="agendaList">
+            <option value="">Chargement...</option>
+        </select>
+
+        <label for="projectName" id="lblProject">Nom du projet</label>
+        <input type="text" id="projectName" placeholder="Ex: Marketing">
+
+        <label for="taskDescription" id="lblTask">Description de la tâche</label>
+        <input type="text" id="taskDescription" placeholder="(Optionnelle)">
+        
+        <button id="startButton" class="btn btn-primary">
+            <span class="material-icons-round" id="btnIcon">play_arrow</span>
+            <span id="btnText">Démarrer</span>
+        </button>
+        <div class="loading-container" id="loadingIndicator">
+            <div class="spinner"></div>
+        </div>
+        <div id="message"></div>
+    </div>
+
+<script>
+    var startTime;
+    var timerInterval;
+    var lang = 'fr';
+    
+    const i18n = {
+        fr: {
+            kbSpace: 'Démarrer / Arrêter',
+            agendaTarget: 'Agenda cible',
+            loading: 'Chargement...',
+            projectName: 'Nom du projet',
+            projectPlaceholder: 'Ex: Marketing',
+            taskDesc: 'Description de la tâche',
+            taskPlaceholder: '(Optionnelle)',
+            start: 'Démarrer',
+            stop: 'Arrêter',
+            errProject: 'Veuillez entrer un nom de projet.',
+            errAgenda: 'Veuillez sélectionner un agenda.',
+            error: 'Erreur : '
+        },
+        en: {
+            kbSpace: 'Start / Stop',
+            agendaTarget: 'Target Calendar',
+            loading: 'Loading...',
+            projectName: 'Project Name',
+            projectPlaceholder: 'E.g.: Marketing',
+            taskDesc: 'Task Description',
+            taskPlaceholder: '(Optional)',
+            start: 'Start',
+            stop: 'Stop',
+            errProject: 'Please enter a project name.',
+            errAgenda: 'Please select a calendar.',
+            error: 'Error: '
+        }
+    };
+
+    function translateApp() {
+        const t = i18n[lang];
+        document.getElementById('lblKbSpace').textContent = t.kbSpace;
+        document.getElementById('lblAgenda').textContent = t.agendaTarget;
+        document.getElementById('lblProject').textContent = t.projectName;
+        document.getElementById('projectName').placeholder = t.projectPlaceholder;
+        document.getElementById('lblTask').textContent = t.taskDesc;
+        document.getElementById('taskDescription').placeholder = t.taskPlaceholder;
+        if (!timerInterval) {
+            document.getElementById('btnText').textContent = t.start;
+        } else {
+            document.getElementById('btnText').textContent = t.stop;
+        }
+        var option = document.querySelector('#agendaList option[value=""]');
+        if(option) option.textContent = t.loading;
+    }
+
+    function initLang() {
+        google.script.run.withSuccessHandler(function(l) {
+            lang = (l === 'en') ? 'en' : 'fr';
+            translateApp();
+        }).getUserLanguage();
+    }
+
+    function formatTime(elapsedTime) {
+        var hours = Math.floor(elapsedTime / 3600000);
+        var minutes = Math.floor((elapsedTime % 3600000) / 60000);
+        var seconds = Math.floor(((elapsedTime % 3600000) % 60000) / 1000);
+
+        return (hours < 10 ? "0" + hours : hours) + ":" +
+               (minutes < 10 ? "0" + minutes : minutes) + ":" +
+               (seconds < 10 ? "0" + seconds : seconds);
+    }
+
+    function updateTimer() {
+        var elapsedTime = new Date() - startTime;
+        document.getElementById('timer').textContent = formatTime(elapsedTime);
+    }
+
+    function toggleLoading(show) {
+        document.getElementById('loadingIndicator').style.display = show ? 'flex' : 'none';
+        document.getElementById('startButton').style.display = show ? 'none' : 'flex';
+    }
+
+    function showMessage(msg, isError) {
+        var msgDiv = document.getElementById('message');
+        msgDiv.textContent = msg;
+        msgDiv.style.color = isError ? 'var(--error)' : 'var(--success)';
+        setTimeout(function() { msgDiv.textContent = ''; }, 5000);
+    }
+
+    function handleStartStop() {
+        const t = i18n[lang];
+        var agendaId = document.getElementById('agendaList').value;
+        var projectName = document.getElementById('projectName').value.trim();
+        var taskDescription = document.getElementById('taskDescription').value.trim();
+        var btn = document.getElementById('startButton');
+
+        if (timerInterval) {
+            // Arrêter
+            clearInterval(timerInterval);
+            timerInterval = null;
+            document.getElementById('btnText').textContent = t.start;
+            document.getElementById('btnIcon').textContent = 'play_arrow';
+            btn.classList.remove('btn-danger');
+            btn.classList.add('btn-primary');
+            toggleLoading(true);
+            
+            var endTime = new Date();
+            
+            google.script.run
+                .withSuccessHandler(function(response) {
+                    toggleLoading(false);
+                    showMessage(response, false);
+                    document.getElementById('projectName').value = '';
+                    document.getElementById('taskDescription').value = '';
+                    document.getElementById('timer').textContent = '00:00:00';
+                })
+                .withFailureHandler(function(error) {
+                    toggleLoading(false);
+                    showMessage(t.error + error.message, true);
+                    timerInterval = setInterval(updateTimer, 1000);
+                    document.getElementById('btnText').textContent = t.stop;
+                    document.getElementById('btnIcon').textContent = 'stop';
+                    btn.classList.add('btn-danger');
+                    btn.classList.remove('btn-primary');
+                })
+                .creerEvenementDansAgenda(agendaId, projectName, taskDescription, startTime.toISOString(), endTime.toISOString());
+            
+        } else {
+            if (!projectName) {
+                showMessage(t.errProject, true);
+                return;
+            }
+            if (!agendaId) {
+                showMessage(t.errAgenda, true);
+                return;
+            }
+
+            // Démarrer
+            startTime = new Date(); 
+            timerInterval = setInterval(updateTimer, 1000);
+            document.getElementById('btnText').textContent = t.stop;
+            document.getElementById('btnIcon').textContent = 'stop';
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-danger');
+            document.getElementById('message').textContent = '';
+
+            google.script.run.saveTimerState(agendaId, projectName, taskDescription, startTime.toISOString());
+        }
+    }
+
+    document.getElementById('startButton').addEventListener('click', handleStartStop);
+
+    document.addEventListener('keydown', function(e) {
+        if (e.code === 'Space') {
+            if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'SELECT') {
+                e.preventDefault();
+                handleStartStop();
+            }
+        }
+    });
+
+    function chargerAgendas() {
+        google.script.run.withSuccessHandler(function(agendas) {
+            var select = document.getElementById('agendaList');
+            select.innerHTML = '';
+            agendas.forEach(function(agenda) {
+                var option = document.createElement('option');
+                option.value = agenda.id;
+                option.textContent = agenda.nom;
+                select.appendChild(option);
+            });
+            verifierEtatChronometre();
+        }).obtenirCalendriers();
+    }
+
+    function verifierEtatChronometre() {
+        const t = i18n[lang];
+        google.script.run.withSuccessHandler(function(state) {
+            if (state.isRunning) {
+                startTime = new Date(state.startTime);
+                document.getElementById('agendaList').value = state.agendaId;
+                document.getElementById('projectName').value = state.projectName;
+                document.getElementById('taskDescription').value = state.taskDescription;
+                
+                timerInterval = setInterval(updateTimer, 1000);
+                var btn = document.getElementById('startButton');
+                document.getElementById('btnText').textContent = (t ? t.stop : 'Arrêter');
+                document.getElementById('btnIcon').textContent = 'stop';
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-danger');
+                updateTimer();
+            }
+        }).getTimerState();
+    }
+
+    initLang();
+    chargerAgendas();
+</script>
+</body>
+</html>
