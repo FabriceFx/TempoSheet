@@ -1,0 +1,8 @@
+# Fichiers présents dans le dépôt mais qui n'ont rien à faire dans le projet
+# Apps Script. presentation.html est une page vitrine autonome, destinée à un
+# navigateur classique et non à une barre latérale.
+presentation.html
+README.md
+.gitignore
+.git/**
+node_modules/**

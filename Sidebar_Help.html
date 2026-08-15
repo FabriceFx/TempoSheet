@@ -7,28 +7,35 @@
     <?!= include('Styles') ?>
     <style>
         ul {
-            padding-left: 24px;
+            padding-left: 20px;
             margin-bottom: 16px;
         }
 
         li {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .subhead {
+            margin: 20px 0 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--on-surface);
         }
     </style>
 </head>
 
 <body>
-    <div class="card">
-        <h2 data-i18n="helpTitle">Timesheet</h2>
-        <p data-i18n="helpP1">Cet outil transforme votre Google Agenda en un système de suivi du temps.</p>
+    <div class="section">
+        <h2 data-i18n="helpTitle">TempoSheet</h2>
+        <p class="subtitle" data-i18n="helpP1">Cet outil transforme votre Google Agenda en un système de suivi du temps.</p>
 
-        <p><strong data-i18n="helpP2">Premiers pas :</strong></p>
+        <p class="subhead" data-i18n="helpP2">Premiers pas :</p>
         <ul>
             <li data-i18n="helpL1">Créez des événements dans le Google Agenda de votre choix.</li>
             <li>
-                <span data-i18n="helpL2">Pour qu'un événement soit reconnu, son titre doit contenir un #tag identifiant le projet :</span><br>
-                <span class="code-block" data-i18n="helpL3">#NomDuProjet Description de la tâche</span><br>
-                <em data-i18n="helpL3b" style="font-size: 12px; color: var(--on-surface-variant);">Le #tag peut aussi se
+                <span data-i18n="helpL2">Pour qu'un événement soit reconnu, son titre doit contenir un #tag identifiant le projet :</span>
+                <span class="code-block" data-i18n="helpL3">#NomDuProjet Description de la tâche</span>
+                <em data-i18n="helpL3b" style="font-size:12px; color:var(--on-surface-variant);">Le #tag peut aussi se
                     trouver ailleurs dans le titre : « Réunion #projet1 hebdomadaire ». Le nom du projet accepte toutes
                     les langues : #مشروع, #プロジェクト, #Проект…</em>
             </li>
@@ -36,7 +43,7 @@
                     sera nommée « Tâches diverses ».</em></li>
             <li><em data-i18n="helpAllDay">Un événement « journée entière » est comptabilisé forfaitairement à 7 heures
                     par journée couverte.</em></li>
-            <li data-i18n-html="helpL5">Allez dans le menu <strong>Extensions</strong> → <strong>Timesheet</strong> →
+            <li data-i18n-html="helpL5">Allez dans le menu <strong>Extensions</strong> → <strong>TempoSheet</strong> →
                 <strong>Créer un rapport</strong>.
             </li>
             <li data-i18n-html="helpL6">Sélectionnez le calendrier source, la période souhaitée et cliquez sur
@@ -44,9 +51,9 @@
             </li>
         </ul>
 
-        <p><strong data-i18n="helpP3">Informations complémentaires :</strong></p>
+        <p class="subhead" data-i18n="helpP3">Informations complémentaires :</p>
         <p><span data-i18n="helpP4">Si vous avez des questions ou souhaitez signaler un problème, contactez-nous :</span><br>
-            <a href='mailto:contact@atelier-informatique.com'>contact@atelier-informatique.com</a>
+            <a href="mailto:contact@atelier-informatique.com">contact@atelier-informatique.com</a>
         </p>
     </div>
 

@@ -6,24 +6,34 @@
     <?!= include('Styles') ?>
     <style>
         #timer {
-            font-size: 42px;
-            font-weight: 500;
-            margin: 16px 0;
-            color: var(--primary);
+            margin: 4px 0 12px;
+            font-size: 40px;
+            font-weight: 400;
+            letter-spacing: -0.5px;
             text-align: center;
+            color: var(--on-surface);
             font-variant-numeric: tabular-nums;
+        }
+
+        .hint {
+            text-align: center;
+            font-size: 11px;
+            color: var(--on-surface-variant);
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div id="timer">00:00:00</div>
-        <div style="text-align:center; margin-bottom: 8px; font-size: 11px; color: var(--outline);">
-            <kbd data-i18n="timerKbKey">Espace</kbd> <span data-i18n="timerKbSpace">Démarrer / Arrêter</span>
+    <div class="progress" id="progress"></div>
+
+    <div class="section">
+        <div id="timer" role="timer" aria-live="off">00:00:00</div>
+        <div class="hint">
+            <kbd data-i18n="timerKbKey">Espace</kbd>
+            <span data-i18n="timerKbSpace">Démarrer / Arrêter</span>
         </div>
     </div>
 
-    <div class="card">
+    <div class="section">
         <label for="agendaList" data-i18n="timerAgendaLabel">Agenda cible</label>
         <select id="agendaList">
             <option value="" data-i18n="loading">Chargement...</option>
@@ -35,22 +45,38 @@
         <label for="taskDescription" data-i18n="timerTaskLabel">Description de la tâche</label>
         <input type="text" id="taskDescription" placeholder="(Optionnelle)" data-i18n-placeholder="timerTaskPlaceholder">
 
-        <button id="startButton" class="btn btn-primary">
+        <button id="startButton" class="btn btn-filled">
             <span id="btnIcon"></span>
             <span id="btnText" data-i18n="timerStart">Démarrer</span>
         </button>
-        <div class="loading-container" id="loadingIndicator">
-            <div class="spinner"></div>
+
+        <div class="alert" id="confirmLong" style="display:none;" role="alertdialog" aria-labelledby="confirmLongText">
+            <p id="confirmLongText"></p>
+            <button id="btnConfirmSave" class="btn btn-filled" data-i18n="timerBtnSaveAnyway">Enregistrer quand même</button>
+            <div class="btn-row">
+                <button id="btnConfirmResume" class="btn btn-text" data-i18n="timerBtnResume">Reprendre</button>
+                <button id="btnConfirmDiscard" class="btn btn-danger" data-i18n="timerBtnDiscard">Abandonner</button>
+            </div>
         </div>
-        <div id="message"></div>
+
+        <div class="msg" id="message" role="status" aria-live="polite"></div>
     </div>
 
 <script>
     var startTime;
     var timerInterval;
+    var messageTimer = null;
 
     // Libellés fournis par le serveur (I18n.gs), source de vérité unique.
     var T = {};
+
+    // Seuil injecté depuis Service_Timer.gs : une seule valeur de référence
+    // pour le client et pour le garde-fou serveur.
+    var SEUIL_HEURES = <?= seuilAlerteDureeHeures() ?>;
+
+    // Heure de fin retenue tant que l'utilisateur n'a pas tranché sur une durée
+    // anormalement longue.
+    var finEnAttente = null;
 
     // Icônes SVG inline : évite de charger la police Material Icons pour deux glyphes.
     var ICONE_PLAY = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
@@ -70,14 +96,18 @@
         majBouton(!!timerInterval);
     }
 
-    /** Bascule l'apparence du bouton entre « Démarrer » et « Arrêter ». */
+    /**
+     * Bascule l'apparence du bouton entre « Démarrer » et « Arrêter ».
+     * Arrêter n'est pas une action destructrice — elle enregistre — d'où un
+     * bouton tonal plutôt que rouge.
+     */
     function majBouton(enCours) {
         var btn = document.getElementById('startButton');
         document.getElementById('btnIcon').innerHTML = enCours ? ICONE_STOP : ICONE_PLAY;
         document.getElementById('btnText').textContent =
             (enCours ? T.timerStop : T.timerStart) || (enCours ? 'Arrêter' : 'Démarrer');
-        btn.classList.toggle('btn-danger', enCours);
-        btn.classList.toggle('btn-primary', !enCours);
+        btn.classList.toggle('btn-tonal', enCours);
+        btn.classList.toggle('btn-filled', !enCours);
     }
 
     function formatTime(elapsedTime) {
@@ -94,78 +124,158 @@
         document.getElementById('timer').textContent = formatTime(new Date() - startTime);
     }
 
-    function toggleLoading(show) {
-        document.getElementById('loadingIndicator').style.display = show ? 'flex' : 'none';
-        document.getElementById('startButton').style.display = show ? 'none' : 'flex';
+    /**
+     * Barre de progression en haut du panneau plutôt que substitution du
+     * bouton par un spinner : la mise en page ne bouge plus pendant l'appel.
+     */
+    function toggleLoading(actif) {
+        document.getElementById('progress').classList.toggle('is-active', actif);
+        document.getElementById('startButton').disabled = actif;
     }
 
-    function showMessage(msg, isError) {
-        var msgDiv = document.getElementById('message');
-        msgDiv.textContent = msg || '';
-        msgDiv.style.color = isError ? 'var(--error)' : 'var(--success)';
-        msgDiv.classList.add('fade-in');
-        setTimeout(function () {
-            msgDiv.textContent = '';
-            msgDiv.classList.remove('fade-in');
-        }, 5000);
+    function showMessage(msg, type) {
+        var el = document.getElementById('message');
+        el.textContent = msg || '';
+        el.className = 'msg' + (type ? ' is-' + type : '');
+        clearTimeout(messageTimer);
+        messageTimer = setTimeout(function () {
+            el.textContent = '';
+            el.className = 'msg';
+        }, 6000);
+    }
+
+    /** Durée lisible : « 3 h », « 63 h 12 min ». */
+    function formaterDuree(ms) {
+        var totalMinutes = Math.round(ms / 60000);
+        var h = Math.floor(totalMinutes / 60);
+        var min = totalMinutes % 60;
+        return min === 0 ? h + ' h' : h + ' h ' + min + ' min';
+    }
+
+    /** Remet la saisie et l'affichage à zéro après un enregistrement ou un abandon. */
+    function reinitialiser() {
+        document.getElementById('projectName').value = '';
+        document.getElementById('taskDescription').value = '';
+        document.getElementById('timer').textContent = '00:00:00';
+        majBouton(false);
+    }
+
+    function afficherAlerteLongue(fin) {
+        finEnAttente = fin;
+        document.getElementById('confirmLongText').textContent =
+            (T.timerLongWarning || 'Ce chronomètre tourne depuis {duree}.')
+                .replace('{duree}', formaterDuree(fin - startTime));
+        document.getElementById('confirmLong').style.display = 'block';
+        document.getElementById('startButton').style.display = 'none';
+    }
+
+    function masquerAlerteLongue() {
+        finEnAttente = null;
+        document.getElementById('confirmLong').style.display = 'none';
+        document.getElementById('startButton').style.display = 'inline-flex';
+    }
+
+    function enregistrer(fin, confirmeLongueDuree) {
+        toggleLoading(true);
+        google.script.run
+            .withSuccessHandler(function (response) {
+                toggleLoading(false);
+                showMessage(response, 'success');
+                reinitialiser();
+            })
+            .withFailureHandler(function (error) {
+                // L'enregistrement a échoué : on relance le chronomètre pour
+                // ne pas perdre le temps déjà écoulé.
+                toggleLoading(false);
+                showMessage(T.errPrefix + error.message, 'error');
+                timerInterval = setInterval(updateTimer, 1000);
+                majBouton(true);
+            })
+            .creerEvenementDansAgenda(
+                document.getElementById('agendaList').value,
+                document.getElementById('projectName').value.trim(),
+                document.getElementById('taskDescription').value.trim(),
+                startTime.toISOString(),
+                fin.toISOString(),
+                !!confirmeLongueDuree);
     }
 
     function handleStartStop() {
-        var agendaId = document.getElementById('agendaList').value;
-        var projectName = document.getElementById('projectName').value.trim();
-        var taskDescription = document.getElementById('taskDescription').value.trim();
+        // Une décision est en attente sur une durée anormale : ni démarrage ni
+        // arrêt tant que l'utilisateur n'a pas tranché (le raccourci clavier
+        // reste actif alors que le bouton est masqué).
+        if (finEnAttente) return;
 
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
             majBouton(false);
-            toggleLoading(true);
 
-            var endTime = new Date();
-
-            google.script.run
-                .withSuccessHandler(function (response) {
-                    toggleLoading(false);
-                    showMessage(response, false);
-                    document.getElementById('projectName').value = '';
-                    document.getElementById('taskDescription').value = '';
-                    document.getElementById('timer').textContent = '00:00:00';
-                })
-                .withFailureHandler(function (error) {
-                    // L'enregistrement a échoué : on relance le chronomètre pour
-                    // ne pas perdre le temps déjà écoulé.
-                    toggleLoading(false);
-                    showMessage(T.errPrefix + error.message, true);
-                    timerInterval = setInterval(updateTimer, 1000);
-                    majBouton(true);
-                })
-                .creerEvenementDansAgenda(agendaId, projectName, taskDescription, startTime.toISOString(), endTime.toISOString());
-
-        } else {
-            if (!projectName) {
-                showMessage(T.errProject, true);
-                return;
+            var fin = new Date();
+            // Chronomètre oublié : on ne crée jamais un événement de plusieurs
+            // dizaines d'heures sans validation explicite.
+            if ((fin - startTime) / 3600000 > SEUIL_HEURES) {
+                afficherAlerteLongue(fin);
+            } else {
+                enregistrer(fin, false);
             }
-            if (!agendaId) {
-                showMessage(T.errCalendar, true);
-                return;
-            }
-
-            startTime = new Date();
-            timerInterval = setInterval(updateTimer, 1000);
-            majBouton(true);
-            document.getElementById('message').textContent = '';
-
-            google.script.run.saveTimerState(agendaId, projectName, taskDescription, startTime.toISOString());
+            return;
         }
+
+        var projectName = document.getElementById('projectName').value.trim();
+        var agendaId = document.getElementById('agendaList').value;
+
+        if (!projectName) {
+            showMessage(T.errProject, 'error');
+            return;
+        }
+        if (!agendaId) {
+            showMessage(T.errCalendar, 'error');
+            return;
+        }
+
+        startTime = new Date();
+        timerInterval = setInterval(updateTimer, 1000);
+        majBouton(true);
+        showMessage('');
+
+        google.script.run.saveTimerState(
+            agendaId, projectName, document.getElementById('taskDescription').value.trim(), startTime.toISOString());
     }
 
     document.getElementById('startButton').addEventListener('click', handleStartStop);
 
+    document.getElementById('btnConfirmSave').addEventListener('click', function () {
+        var fin = finEnAttente;
+        masquerAlerteLongue();
+        enregistrer(fin, true);
+    });
+
+    document.getElementById('btnConfirmResume').addEventListener('click', function () {
+        masquerAlerteLongue();
+        timerInterval = setInterval(updateTimer, 1000);
+        majBouton(true);
+        updateTimer();
+    });
+
+    document.getElementById('btnConfirmDiscard').addEventListener('click', function () {
+        google.script.run
+            .withSuccessHandler(function () {
+                masquerAlerteLongue();
+                reinitialiser();
+                showMessage(T.timerDiscarded, 'success');
+            })
+            .withFailureHandler(function (error) {
+                masquerAlerteLongue();
+                showMessage(T.errPrefix + error.message, 'error');
+            })
+            .clearTimerState();
+    });
+
     document.addEventListener('keydown', function (e) {
         if (e.code === 'Space') {
             var tag = document.activeElement.tagName;
-            if (tag !== 'INPUT' && tag !== 'SELECT' && tag !== 'TEXTAREA') {
+            if (tag !== 'INPUT' && tag !== 'SELECT' && tag !== 'TEXTAREA' && tag !== 'BUTTON') {
                 e.preventDefault();
                 handleStartStop();
             }
@@ -186,7 +296,7 @@
                 verifierEtatChronometre();
             })
             .withFailureHandler(function () {
-                showMessage(T.errLoadCalendars, true);
+                showMessage(T.errLoadCalendars, 'error');
             })
             .obtenirCalendriers();
     }
@@ -211,9 +321,19 @@
             document.getElementById('taskDescription').value = state.taskDescription;
 
             startTime = new Date(state.startTime);
+            updateTimer();
+
+            // Chronomètre laissé tourner (sidebar fermée tout un week-end, par
+            // exemple) : on alerte à la restauration plutôt que d'attendre un
+            // clic sur Arrêter.
+            if ((new Date() - startTime) / 3600000 > SEUIL_HEURES) {
+                majBouton(false);
+                afficherAlerteLongue(new Date());
+                return;
+            }
+
             timerInterval = setInterval(updateTimer, 1000);
             majBouton(true);
-            updateTimer();
         }).getTimerState();
     }
 

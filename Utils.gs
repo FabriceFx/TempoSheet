@@ -126,6 +126,18 @@ function jourCourantDansFuseau_(fuseau) {
 }
 
 /**
+ * Formate une durée en heures sous forme lisible : « 3 h », « 63 h 12 min ».
+ * @param {number} heures
+ * @return {string}
+ */
+function formaterDuree_(heures) {
+  const totalMinutes = Math.round(heures * 60);
+  const h = Math.floor(totalMinutes / 60);
+  const min = totalMinutes % 60;
+  return min === 0 ? `${h} h` : `${h} h ${min} min`;
+}
+
+/**
  * Échappe les caractères significatifs en HTML.
  * Indispensable pour toute valeur d'origine externe (titres d'événements issus
  * d'agendas partagés, noms de feuilles) injectée dans un corps d'email.

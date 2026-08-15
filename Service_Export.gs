@@ -25,20 +25,37 @@ function parserDateLocale_(chaine) {
 }
 
 /**
- * Retourne la durée d'un événement en heures.
+ * Retourne la durée d'un événement en heures, bornée à la période demandée.
+ *
+ * Le bornage est indispensable pour un outil de facturation : sans lui, une
+ * réunion du 31 janvier 23h au 1er février 1h compterait 2 heures en janvier
+ * *et* 2 heures en février, soit les mêmes heures facturées deux fois.
+ *
  * Un événement "journée entière" est valorisé à HEURES_PAR_JOURNEE_ENTIERE par
- * journée couverte, et non à 24 heures.
+ * journée couverte à l'intérieur de la période, et non à 24 heures.
+ *
  * @param {GoogleAppsScript.Calendar.CalendarEvent} event
- * @return {number} La durée en heures.
+ * @param {Date} debutPeriode - Borne basse (00:00:00.000).
+ * @param {Date} finPeriode - Borne haute (23:59:59.999).
+ * @return {number} La durée retenue, en heures.
  */
-function dureeEvenementEnHeures_(event) {
+function dureeEvenementEnHeures_(event, debutPeriode, finPeriode) {
+  const borneMin = debutPeriode.getTime();
+  const borneMax = finPeriode.getTime() + 1; // 23:59:59.999 -> minuit exclusif
+
   if (event.isAllDayEvent()) {
-    const debut = event.getAllDayStartDate();
-    const fin = event.getAllDayEndDate(); // borne exclusive
-    const nbJours = Math.max(1, Math.round((fin - debut) / 86400000));
+    // getAllDayEndDate() est déjà une borne exclusive (minuit du lendemain).
+    // L'arrondi absorbe les décalages horaires entre le fuseau du script et
+    // celui de l'agenda, ainsi que les bascules d'heure d'été.
+    const debut = Math.max(event.getAllDayStartDate().getTime(), borneMin);
+    const fin = Math.min(event.getAllDayEndDate().getTime(), borneMax);
+    const nbJours = Math.max(0, Math.round((fin - debut) / 86400000));
     return nbJours * HEURES_PAR_JOURNEE_ENTIERE;
   }
-  return (event.getEndTime() - event.getStartTime()) / 3600000;
+
+  const debut = Math.max(event.getStartTime().getTime(), borneMin);
+  const fin = Math.min(event.getEndTime().getTime(), borneMax);
+  return Math.max(0, fin - debut) / 3600000;
 }
 
 /**
@@ -233,7 +250,8 @@ function exporterCalendrier(selectedCalendarId, selectedPeriod, dateDebut, dateF
     const extrait = extraireProjetEtTache_(event.getTitle(), miscLabel);
     if (!extrait) return;
 
-    const heures = dureeEvenementEnHeures_(event);
+    const heures = dureeEvenementEnHeures_(event, dates.debut, dates.fin);
+    if (heures <= 0) return;
 
     if (!projetsEtTaches.has(extrait.projet)) {
       projetsEtTaches.set(extrait.projet, { taches: [], heures: 0 });

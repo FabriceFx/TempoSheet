@@ -4,78 +4,50 @@
     <base target="_top">
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
     <?!= include('Styles') ?>
-    <style>
-        p {
-            font-size: 13px;
-            color: var(--on-surface);
-            opacity: 0.8;
-            margin-bottom: 24px;
-        }
-
-        .btn {
-            background: var(--primary);
-            color: var(--on-primary);
-            margin-top: 16px;
-        }
-
-        .btn:hover:not(:disabled) {
-            opacity: 0.9;
-        }
-
-        #message {
-            color: var(--error);
-        }
-    </style>
 </head>
 <body>
-    <div class="card">
+    <div class="progress" id="progress"></div>
+
+    <div class="section">
         <h2 data-i18n="exportTitle">Générer un rapport</h2>
-        <p data-i18n="exportSubtitle">Sélectionnez un calendrier et une période pour créer votre feuille de temps.</p>
+        <p class="subtitle" data-i18n="exportSubtitle">Sélectionnez un calendrier et une période pour créer votre feuille de temps.</p>
 
-        <div class="dropdown-container">
-            <label for="calendrierSelectionne" data-i18n="exportCalendarLabel">Calendrier source</label>
-            <select id="calendrierSelectionne">
-                <option value="" data-i18n="loading">Chargement...</option>
-            </select>
-        </div>
+        <label for="calendrierSelectionne" data-i18n="exportCalendarLabel">Calendrier source</label>
+        <select id="calendrierSelectionne">
+            <option value="" data-i18n="loading">Chargement...</option>
+        </select>
 
-        <div class="dropdown-container">
-            <label for="periodeExtraction" data-i18n="exportPeriodLabel">Période</label>
-            <select id="periodeExtraction" onchange="toggleCustomDateFields()">
-                <option value="cetteSemaine" data-i18n="periodThisWeek">Cette semaine</option>
-                <option value="laSemaineDerniere" data-i18n="periodLastWeek">La semaine dernière</option>
-                <option value="ceMois" data-i18n="periodThisMonth">Ce mois</option>
-                <option value="leDernierMois" data-i18n="periodLastMonth">Le mois dernier</option>
-                <option value="cetteAnnee" data-i18n="periodThisYear">Cette année</option>
-                <option value="periodeSpecifiee" data-i18n="periodCustom">Période spécifiée</option>
-            </select>
-        </div>
+        <label for="periodeExtraction" data-i18n="exportPeriodLabel">Période</label>
+        <select id="periodeExtraction" onchange="toggleCustomDateFields()">
+            <option value="cetteSemaine" data-i18n="periodThisWeek">Cette semaine</option>
+            <option value="laSemaineDerniere" data-i18n="periodLastWeek">La semaine dernière</option>
+            <option value="ceMois" data-i18n="periodThisMonth">Ce mois</option>
+            <option value="leDernierMois" data-i18n="periodLastMonth">Le mois dernier</option>
+            <option value="cetteAnnee" data-i18n="periodThisYear">Cette année</option>
+            <option value="periodeSpecifiee" data-i18n="periodCustom">Période spécifiée</option>
+        </select>
 
         <div id="customDateFields" style="display:none;">
-            <div class="date-container">
-                <label for="dateDebut" data-i18n="exportStartDate">Date de début</label>
-                <input type="date" id="dateDebut">
-            </div>
-            <div class="date-container">
-                <label for="dateFin" data-i18n="exportEndDate">Date de fin</label>
-                <input type="date" id="dateFin">
-            </div>
+            <label for="dateDebut" data-i18n="exportStartDate">Date de début</label>
+            <input type="date" id="dateDebut">
+
+            <label for="dateFin" data-i18n="exportEndDate">Date de fin</label>
+            <input type="date" id="dateFin">
         </div>
 
-        <button id="btnCreer" class="btn">
+        <button id="btnCreer" class="btn btn-filled">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
             <span data-i18n="exportBtnCreate">Créer le rapport</span>
         </button>
-        <div class="loading-container" id="loadingIndicator">
-            <div class="spinner"></div>
-        </div>
-        <div id="message"></div>
+
+        <div class="msg" id="message" role="status" aria-live="polite"></div>
     </div>
 
     <script>
         // Libellés fournis par le serveur (I18n.gs), source de vérité unique.
         // Les valeurs présentes dans le HTML ne servent que d'affichage initial.
         var T = {};
+        var messageTimer = null;
 
         function appliquerTextes(textes) {
             T = textes;
@@ -90,19 +62,26 @@
             document.getElementById('customDateFields').style.display = estPersonnalise ? 'block' : 'none';
         }
 
-        function toggleLoading(show) {
-            document.getElementById('loadingIndicator').style.display = show ? 'flex' : 'none';
-            document.getElementById('btnCreer').style.display = show ? 'none' : 'flex';
+        /**
+         * Barre de progression en haut du panneau plutôt que substitution du
+         * bouton par un spinner : la mise en page ne bouge plus pendant l'appel.
+         */
+        function toggleLoading(actif) {
+            document.getElementById('progress').classList.toggle('is-active', actif);
+            document.getElementById('btnCreer').disabled = actif;
         }
 
-        function showMessage(msg) {
-            var msgDiv = document.getElementById('message');
-            msgDiv.textContent = msg || '';
-            msgDiv.classList.add('fade-in');
-            setTimeout(function () {
-                msgDiv.textContent = '';
-                msgDiv.classList.remove('fade-in');
-            }, 5000);
+        function showMessage(msg, type) {
+            var el = document.getElementById('message');
+            el.textContent = msg || '';
+            el.className = 'msg' + (type ? ' is-' + type : '');
+            // Sans cette remise à zéro, le minuteur d'un message précédent
+            // effacerait prématurément le message courant.
+            clearTimeout(messageTimer);
+            messageTimer = setTimeout(function () {
+                el.textContent = '';
+                el.className = 'msg';
+            }, 6000);
         }
 
         function chargerCalendriers() {
@@ -118,7 +97,7 @@
                     });
                 })
                 .withFailureHandler(function () {
-                    showMessage(T.errLoadCalendars);
+                    showMessage(T.errLoadCalendars, 'error');
                 })
                 .obtenirCalendriers();
         }
@@ -130,7 +109,7 @@
             var dateFin = '';
 
             if (!selectedCalendarId) {
-                showMessage(T.errCalendar);
+                showMessage(T.errCalendar, 'error');
                 return;
             }
 
@@ -138,7 +117,7 @@
                 dateDebut = document.getElementById('dateDebut').value;
                 dateFin = document.getElementById('dateFin').value;
                 if (!dateDebut || !dateFin) {
-                    showMessage(T.errDates);
+                    showMessage(T.errDates, 'error');
                     return;
                 }
             }
@@ -152,7 +131,7 @@
                 })
                 .withFailureHandler(function (error) {
                     toggleLoading(false);
-                    showMessage(T.errPrefix + error.message);
+                    showMessage(T.errPrefix + error.message, 'error');
                 })
                 .exporterCalendrier(selectedCalendarId, selectedPeriod, dateDebut, dateFin);
         };

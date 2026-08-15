@@ -1,5 +1,5 @@
 /**
- * GWorkspace Timesheet
+ * TempoSheet
  * 
  * Cet outil permet de transformer Google Agenda en un système de suivi du temps (Time Tracking).
  * Les utilisateurs marquent leurs événements avec des hashtags (ex: #Projet) et l'extension
@@ -57,36 +57,56 @@ function afficherInfosDeveloppeur() {
       <head>
         <meta charset="UTF-8">
         <style>
+          /* Mêmes tokens Material 3 que les barres latérales (voir Styles.html). */
           :root {
-            --primary: #1a73e8;
-            --on-surface: #202124;
+            --primary: #137333;
+            --on-surface: #1f1f1f;
+            --on-surface-variant: #444746;
             --surface: #ffffff;
-            --outline: #dadce0;
+            --surface-container: #f0f4f9;
           }
+          @media (prefers-color-scheme: dark) {
+            :root {
+              --primary: #81c995;
+              --on-surface: #e3e3e3;
+              --on-surface-variant: #c4c7c5;
+              --surface: #1f1f1f;
+              --surface-container: #2d2f31;
+            }
+          }
+          * { box-sizing: border-box; }
           body {
             font-family: 'Google Sans', Roboto, Arial, sans-serif;
-            margin: 20px;
+            margin: 0;
+            padding: 20px;
             color: var(--on-surface);
             background: var(--surface);
+            font-size: 14px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
           }
-          strong { color: var(--on-surface); }
-          p { line-height: 1.6; font-size: 14px; }
-          a { color: var(--primary); text-decoration: none; }
+          p { margin: 0 0 14px; color: var(--on-surface-variant); }
+          strong { color: var(--on-surface); font-weight: 500; }
+          a { color: var(--primary); text-decoration: none; border-radius: 2px; }
           a:hover { text-decoration: underline; }
-          .linkedin-logo { vertical-align: middle; margin-right: 5px; }
+          a:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+          .linkedin-logo { vertical-align: middle; margin-right: 6px; }
           a[target="_blank"] { display: inline-flex; align-items: center; }
+          /* Bouton pill Material 3, cohérent avec les barres latérales. */
           .paypal-button {
-            background-color: #FFB830;
-            color: #202124;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            text-align: center;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 0 24px;
+            border-radius: 20px;
+            background: var(--primary);
+            color: var(--surface);
+            font-size: 14px;
+            font-weight: 500;
             text-decoration: none;
           }
+          .paypal-button:hover { text-decoration: none; opacity: 0.9; }
         </style>
       </head>
       <body>

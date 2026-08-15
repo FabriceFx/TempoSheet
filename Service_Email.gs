@@ -39,7 +39,7 @@ function envoyerContenuFeuilleParEmail() {
     <table class="main">
       <tr>
         <td class="header">
-          <h1>Timesheet</h1>
+          <h1>TempoSheet</h1>
         </td>
       </tr>
       <tr>
