@@ -37,37 +37,18 @@
         --radius: 8px;
         --radius-sm: 4px;
         --radius-pill: 20px;
-    }
 
-    /*
-     * Une barre latérale est une iframe isolée : elle ne peut pas lire le thème
-     * de Sheets, seulement celui du système. Accord parfait quand les deux
-     * concordent, léger décalage sinon — compromis assumé.
-     */
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --primary: #81c995;
-            --primary-hover: #a8dab5;
-            --on-primary: #0a3818;
-            --primary-container: #0d652d;
-            --on-primary-container: #ceead6;
-
-            --surface: #1f1f1f;
-            --surface-container: #2d2f31;
-            --surface-hover: rgba(227, 227, 227, 0.08);
-
-            --on-surface: #e3e3e3;
-            --on-surface-variant: #c4c7c5;
-            --outline: #8e918f;
-            --outline-variant: #444746;
-
-            --error: #f2b8b5;
-            --error-container: #3b1f1c;
-            --success: #81c995;
-            --warning: #f9ab00;
-            --warning-container: #3a2f0b;
-            --warning-outline: #8c6d1f;
-        }
+        /*
+         * Thème clair uniquement, pour rester aligné sur l'interface blanche de
+         * Google Sheets. Une barre latérale est une iframe isolée : elle ne peut
+         * pas lire le thème de Sheets, seulement celui du système — une palette
+         * sombre s'afficherait donc dans un tableur resté blanc.
+         *
+         * color-scheme est indispensable ici : sans lui, un système en mode
+         * sombre force le rendu natif sombre des <select> et <input type="date">,
+         * qui trancheraient sur le reste du panneau.
+         */
+        color-scheme: light;
     }
 
     * {

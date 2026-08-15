@@ -57,22 +57,15 @@ function afficherInfosDeveloppeur() {
       <head>
         <meta charset="UTF-8">
         <style>
-          /* Mêmes tokens Material 3 que les barres latérales (voir Styles.html). */
+          /* Mêmes tokens Material 3 que les barres latérales (voir Styles.html),
+             thème clair uniquement pour rester aligné sur l'interface de Sheets. */
           :root {
             --primary: #137333;
             --on-surface: #1f1f1f;
             --on-surface-variant: #444746;
             --surface: #ffffff;
             --surface-container: #f0f4f9;
-          }
-          @media (prefers-color-scheme: dark) {
-            :root {
-              --primary: #81c995;
-              --on-surface: #e3e3e3;
-              --on-surface-variant: #c4c7c5;
-              --surface: #1f1f1f;
-              --surface-container: #2d2f31;
-            }
+            color-scheme: light;
           }
           * { box-sizing: border-box; }
           body {

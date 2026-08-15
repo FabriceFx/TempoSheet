@@ -39,8 +39,8 @@ You can install **TempoSheet** into your Google Sheets in two simple ways:
 
 #### Option B: For Developers (via Google clasp CLI)
 ```bash
-git clone https://github.com/FabriceFx/gworkspace-timesheet.git
-cd gworkspace-timesheet
+git clone https://github.com/FabriceFx/TempoSheet.git
+cd TempoSheet
 npm install -g @google/clasp
 clasp login
 clasp create --type sheets --title "TempoSheet"
@@ -124,8 +124,8 @@ Vous pouvez installer **TempoSheet** dans votre Google Sheets très facilement :
 
 #### Option B : Pour les Développeurs (via Google clasp CLI)
 ```bash
-git clone https://github.com/FabriceFx/gworkspace-timesheet.git
-cd gworkspace-timesheet
+git clone https://github.com/FabriceFx/TempoSheet.git
+cd TempoSheet
 npm install -g @google/clasp
 clasp login
 clasp create --type sheets --title "TempoSheet"
