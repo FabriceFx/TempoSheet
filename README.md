@@ -24,6 +24,31 @@
 
 ---
 
+### 📦 How to Install the Extension into Google Sheets
+
+You can install **Timesheet** into your Google Sheets in two simple ways:
+
+#### Option A: Quick Manual Setup in Any Google Sheet (No coding required)
+1. Open any existing Google Sheet, or create a new one at [sheets.new](https://sheets.new).
+2. In the top menu, go to **Extensions** → **Apps Script**.
+3. In the Apps Script editor:
+   * Click **Project Settings** (⚙️ on the left panel) and check **"Show 'appsscript.json' manifest file in editor"**.
+   * Copy and paste the project files (`.gs` and `.html` files from this repository) into the editor.
+4. Click **Save** (💾) and refresh your Google Sheets tab.
+5. The **Timesheet** menu will appear in the top menu under **Extensions** → **Timesheet**!
+
+#### Option B: For Developers (via Google clasp CLI)
+```bash
+git clone https://github.com/FabriceFx/gworkspace-timesheet.git
+cd gworkspace-timesheet
+npm install -g @google/clasp
+clasp login
+clasp create --type sheets --title "Timesheet"
+clasp push
+```
+
+---
+
 ### 📖 Step-by-Step Beginner's Guide
 
 #### 1. First-Time Setup & Authorization
@@ -82,6 +107,31 @@ If you are working live at your computer:
 
 ---
 
+### 📦 Comment ajouter l'extension dans Google Sheets
+
+Vous pouvez installer **Timesheet** dans votre Google Sheets très facilement :
+
+#### Option A : Installation manuelle dans n'importe quel classeur (Sans compétences techniques)
+1. Ouvrez un classeur Google Sheets existant ou créez-en un nouveau via [sheets.new](https://sheets.new).
+2. Dans la barre de menus, cliquez sur **Extensions** → **Apps Script**.
+3. Dans l'éditeur Apps Script :
+   * Cliquez sur les **Paramètres du projet** (icône ⚙️ à gauche) et cochez **« Afficher le fichier manifeste "appsscript.json" dans l'éditeur »**.
+   * Copiez et collez les fichiers du projet (fichiers `.gs` et `.html` de ce dépôt) dans l'éditeur.
+4. Cliquez sur **Enregistrer** (icône 💾) puis actualisez votre page Google Sheets (F5 ou Cmd+R).
+5. Le menu **Timesheet** apparaît directement dans votre feuille sous **Extensions** → **Timesheet** !
+
+#### Option B : Pour les Développeurs (via Google clasp CLI)
+```bash
+git clone https://github.com/FabriceFx/gworkspace-timesheet.git
+cd gworkspace-timesheet
+npm install -g @google/clasp
+clasp login
+clasp create --type sheets --title "Timesheet"
+clasp push
+```
+
+---
+
 ### 📖 Guide Pas-à-Pas pour Débutant(e)s
 
 #### 1. Première utilisation & Autorisation
@@ -122,29 +172,6 @@ Si vous travaillez en direct sur votre ordinateur :
 3. Vous recevez directement un e-mail au format tableau HTML professionnel reprenant l'intégralité du rapport.
 
 ---
-
-## 🛠️ Installation for Developers / Pour les Développeurs
-
-If you want to install this script in your own Google Workspace environment:
-*(Si vous souhaitez installer ce script dans votre propre environnement Google Workspace :)*
-
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/FabriceFx/gworkspace-timesheet.git
-   ```
-2. Make sure you have [clasp](https://github.com/google/clasp) installed:
-   ```bash
-   npm install -g @google/clasp
-   ```
-3. Login to your Google account:
-   ```bash
-   clasp login
-   ```
-4. Create a new Google Apps Script project bound to a Google Sheet, or push directly:
-   ```bash
-   clasp create --type sheets --title "Timesheet"
-   clasp push
-   ```
 
 ## 📝 License
 
