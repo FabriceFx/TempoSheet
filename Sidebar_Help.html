@@ -19,90 +19,54 @@
 
 <body>
     <div class="card">
-        <h2 id="helpTitle">GWorkspace Timesheet</h2>
-        <p id="helpP1">Cet outil transforme votre Google Agenda en un système de suivi du temps.</p>
+        <h2 data-i18n="helpTitle">Timesheet</h2>
+        <p data-i18n="helpP1">Cet outil transforme votre Google Agenda en un système de suivi du temps.</p>
 
-        <p><strong id="helpP2">Premiers pas :</strong></p>
+        <p><strong data-i18n="helpP2">Premiers pas :</strong></p>
         <ul>
-            <li id="helpL1">Créez des événements dans le Google Agenda de votre choix.</li>
-            <li><span id="helpL2">Pour qu'un événement soit reconnu, le titre doit suivre ce format :</span> <br>
-                <span class="code-block" id="helpL3">#NomDuProjet Description de la tâche</span><br>
-                <em id="helpL3b" style="font-size: 12px; color: var(--outline);">Le nom du projet accepte toutes les
-                    langues : #مشروع, #プロジェクト, #Проект…</em>
+            <li data-i18n="helpL1">Créez des événements dans le Google Agenda de votre choix.</li>
+            <li>
+                <span data-i18n="helpL2">Pour qu'un événement soit reconnu, son titre doit contenir un #tag identifiant le projet :</span><br>
+                <span class="code-block" data-i18n="helpL3">#NomDuProjet Description de la tâche</span><br>
+                <em data-i18n="helpL3b" style="font-size: 12px; color: var(--on-surface-variant);">Le #tag peut aussi se
+                    trouver ailleurs dans le titre : « Réunion #projet1 hebdomadaire ». Le nom du projet accepte toutes
+                    les langues : #مشروع, #プロジェクト, #Проект…</em>
             </li>
-            <li><em id="helpL4">La description de la tâche est optionnelle. Sans description, la tâche sera nommée
-                    "Tâches diverses".</em></li>
-            <li id="helpL5">Allez dans le menu <strong>Extensions</strong> -> <strong>GWorkspace Timesheet</strong> ->
+            <li><em data-i18n="helpL4">Le reste du titre devient la description de la tâche. Sans description, la tâche
+                    sera nommée « Tâches diverses ».</em></li>
+            <li><em data-i18n="helpAllDay">Un événement « journée entière » est comptabilisé forfaitairement à 7 heures
+                    par journée couverte.</em></li>
+            <li data-i18n-html="helpL5">Allez dans le menu <strong>Extensions</strong> → <strong>Timesheet</strong> →
                 <strong>Créer un rapport</strong>.
             </li>
-            <li id="helpL6">Sélectionnez le calendrier source, la période souhaitée et cliquez sur <strong>Créer le
-                    rapport</strong>.</li>
+            <li data-i18n-html="helpL6">Sélectionnez le calendrier source, la période souhaitée et cliquez sur
+                <strong>Créer le rapport</strong>.
+            </li>
         </ul>
 
-        <p><strong id="helpP3">Informations complémentaires :</strong></p>
-        <p><span id="helpP4">Si vous avez des questions ou souhaitez signaler un problème, contactez-nous :</span> <br>
+        <p><strong data-i18n="helpP3">Informations complémentaires :</strong></p>
+        <p><span data-i18n="helpP4">Si vous avez des questions ou souhaitez signaler un problème, contactez-nous :</span><br>
             <a href='mailto:contact@atelier-informatique.com'>contact@atelier-informatique.com</a>
         </p>
     </div>
 
     <script>
-        const i18n = {
-            fr: {
-                title: 'Timesheet',
-                p1: 'Cet outil transforme votre Google Agenda en un système de suivi du temps.',
-                p2: 'Premiers pas :',
-                l1: 'Créez des événements dans le Google Agenda de votre choix.',
-                l2: 'Pour qu\'un événement soit reconnu, le titre doit suivre ce format :',
-                l3: '#NomDuProjet Description de la tâche',
-                l3b: 'Le nom du projet accepte toutes les langues : #مشروع, #プロジェクト, #Проект…',
-                l4: 'La description de la tâche est optionnelle. Sans description, la tâche sera nommée "Tâches diverses".',
-                l5: 'Allez dans le menu Extensions -> Timesheet -> Créer un rapport.',
-                l6: 'Sélectionnez le calendrier source, la période souhaitée et cliquez sur Créer le rapport.',
-                p3: 'Informations complémentaires :',
-                p4: 'Si vous avez des questions ou souhaitez signaler un problème, contactez-nous :'
-            },
-            en: {
-                title: 'Timesheet',
-                p1: 'This tool transforms your Google Calendar into a time tracking system.',
-                p2: 'Getting started:',
-                l1: 'Create events in your preferred Google Calendar.',
-                l2: 'For an event to be recognized, the title must follow this format:',
-                l3: '#ProjectName Task description',
-                l3b: 'The project name supports all languages: #مشروع, #プロジェクト, #Проект…',
-                l4: 'The task description is optional. Without a description, the task will be named "Miscellaneous tasks".',
-                l5: 'Go to the menu Extensions -> Timesheet -> Create report.',
-                l6: 'Select the source calendar, the desired period, and click on Create report.',
-                p3: 'Additional information:',
-                p4: 'If you have questions or want to report an issue, contact us:'
-            }
+        // Libellés fournis par le serveur (I18n.gs), source de vérité unique.
+        // Le HTML ne conserve que la version française comme affichage initial.
+        window.onload = function () {
+            google.script.run.withSuccessHandler(function (textes) {
+                document.querySelectorAll('[data-i18n]').forEach(function (el) {
+                    var valeur = textes[el.getAttribute('data-i18n')];
+                    if (valeur) el.textContent = valeur;
+                });
+                // Ces libellés contiennent du balisage <strong> ; ils proviennent
+                // exclusivement du dictionnaire serveur, jamais d'une saisie utilisateur.
+                document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+                    var valeur = textes[el.getAttribute('data-i18n-html')];
+                    if (valeur) el.innerHTML = valeur;
+                });
+            }).getTextesUI();
         };
-
-        function initLang() {
-            google.script.run.withSuccessHandler(function (l) {
-                const lang = (l === 'en') ? 'en' : 'fr';
-                const t = i18n[lang];
-                document.getElementById('helpTitle').textContent = t.title;
-                document.getElementById('helpP1').textContent = t.p1;
-                document.getElementById('helpP2').textContent = t.p2;
-                document.getElementById('helpL1').textContent = t.l1;
-                document.getElementById('helpL2').textContent = t.l2;
-                document.getElementById('helpL3').textContent = t.l3;
-                document.getElementById('helpL3b').textContent = t.l3b;
-                document.getElementById('helpL4').textContent = t.l4;
-                document.getElementById('helpL5').innerHTML = t.l5
-                    .replace('Extensions', '<strong>Extensions</strong>')
-                    .replace('Timesheet', '<strong>Timesheet</strong>')
-                    .replace('Créer un rapport', '<strong>Créer un rapport</strong>')
-                    .replace('Create report', '<strong>Create report</strong>');
-                document.getElementById('helpL6').innerHTML = t.l6
-                    .replace('Créer le rapport', '<strong>Créer le rapport</strong>')
-                    .replace('Create report', '<strong>Create report</strong>');
-                document.getElementById('helpP3').textContent = t.p3;
-                document.getElementById('helpP4').textContent = t.p4;
-            }).getUserLanguage();
-        }
-
-        window.onload = initLang;
     </script>
 </body>
 

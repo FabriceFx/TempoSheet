@@ -44,7 +44,7 @@ function envoyerContenuFeuilleParEmail() {
       </tr>
       <tr>
         <td class="content">
-          <h2>${T_('emailSubject')}${feuille.getName()}</h2>
+          <h2>${T_('emailSubject')}${escapeHtml_(feuille.getName())}</h2>
           <p>${T_('emailIntro')}</p>
           <div class="table-container">
             <table>
@@ -54,7 +54,7 @@ function envoyerContenuFeuilleParEmail() {
   // Utilisation de la première ligne comme en-tête si elle existe
   if (donnees.length > 0) {
     donnees[0].forEach(function(cell) {
-      htmlMessage += `<th>${cell !== "" ? cell : "&nbsp;"}</th>`;
+      htmlMessage += `<th>${cell !== "" ? escapeHtml_(cell) : "&nbsp;"}</th>`;
     });
     htmlMessage += `</tr></thead><tbody>`;
 
@@ -68,7 +68,9 @@ function envoyerContenuFeuilleParEmail() {
         } else if (cell instanceof Date) {
           formatCell = Utilities.formatDate(cell, Session.getScriptTimeZone(), "dd/MM/yyyy");
         }
-        htmlMessage += `<td>${formatCell !== "" ? formatCell : "&nbsp;"}</td>`;
+        // Les titres d'événements peuvent provenir d'agendas partagés :
+        // toute valeur de cellule est donc échappée avant injection.
+        htmlMessage += `<td>${formatCell !== "" ? escapeHtml_(formatCell) : "&nbsp;"}</td>`;
       });
       htmlMessage += `</tr>`;
     }
@@ -91,6 +93,8 @@ function envoyerContenuFeuilleParEmail() {
 </body>
 </html>`;
 
-  GmailApp.sendEmail(destinataire, sujet, T_('emailFallback'), {htmlBody: htmlMessage});
+  // MailApp plutôt que GmailApp : ne requiert que le scope script.send_mail,
+  // bien moins intrusif que gmail.send pour l'utilisateur final.
+  MailApp.sendEmail(destinataire, sujet, T_('emailFallback'), {htmlBody: htmlMessage});
   SpreadsheetApp.getActiveSpreadsheet().toast(T_('emailSent') + destinataire, T_('emailSentTitle'), 5);
 }

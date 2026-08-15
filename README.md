@@ -1,7 +1,7 @@
 # Timesheet ⏱️📊
 
 [![English](https://img.shields.io/badge/Language-English-blue)](#english-version) [![Français](https://img.shields.io/badge/Langue-Français-red)](#version-française)
-![GitHub release](https://img.shields.io/badge/version-1.1.0-blue)
+![GitHub release](https://img.shields.io/badge/version-1.2.0-blue)
 ![Apps Script](https://img.shields.io/badge/Google%20Apps%20Script-4285F4?style=flat&logo=google&logoColor=white)
 
 ---
@@ -19,16 +19,21 @@
 - **Bilingual Support**: The interface automatically switches between English and French based on your Google account settings.
 - **Smart Export**: Generate an aggregated, easy-to-read report in a new Google Sheets™ tab in one click.
 - **Shared Calendars**: Track and export time from shared calendars with your team members.
-- **Dark Mode**: Fully supports automatic dark mode based on your OS preference.
+- **Time-zone Aware**: Periods are computed in your calendar's time zone, so "this month" always means your month.
 
 ### 🚀 How it works
 
 #### 1. Track your time
 Our recommendation is to create a new calendar for your time recordings. You could technically use your personal calendar, but to share your time recordings with somebody else, it's easier to use a dedicated one.
 
-Within that calendar, create new entries representing your work. Every entry must have a tag that identifies the group or project. Behind that tag, you can leave a comment to document the work you have done.
+Within that calendar, create new entries representing your work. Every entry must carry a `#tag` identifying the group or project. The rest of the title becomes the task description.
 For example:
 > `#project1 Learning about time recording with TimeSheet`
+
+The tag does not have to come first — it is recognized anywhere in the title, as long as it is preceded by a space:
+> `Weekly #project1 meeting` → project `project1`, task `Weekly meeting`
+
+Without any description, the task is named *Miscellaneous tasks*. An all-day event is counted at a flat **7 hours per day covered** (adjust `HEURES_PAR_JOURNEE_ENTIERE` in `Service_Export.gs` if your reference working day differs).
 
 #### 2. Generate a Report
 1. Open a Google Sheets document.
@@ -51,16 +56,21 @@ For example:
 - **Support Bilingue** : L'interface bascule automatiquement en Français ou en Anglais en fonction des paramètres de votre compte Google.
 - **Export Intelligent** : Générez un rapport agrégé et lisible dans un nouvel onglet Google Sheets™ en un clic.
 - **Calendriers Partagés** : Suivez et exportez le temps depuis les calendriers partagés avec vos collaborateurs.
-- **Mode Sombre** : Supporte entièrement le mode sombre automatique selon les préférences de votre système d'exploitation.
+- **Fuseaux Horaires** : Les périodes sont calculées dans le fuseau de votre agenda : « ce mois » désigne toujours votre mois.
 
 ### 🚀 Comment ça marche
 
 #### 1. Enregistrez votre temps
 Nous vous recommandons de créer un nouvel agenda spécialement dédié à votre pointage. Vous pourriez techniquement utiliser votre agenda personnel, mais si vous souhaitez partager vos heures avec quelqu'un, il sera bien plus facile d'en avoir un dédié.
 
-Dans cet agenda, créez de nouveaux événements qui représentent votre temps de travail. Chaque événement doit avoir un `#tag` qui identifie le projet ou le groupe. Après ce tag, vous pouvez laisser un commentaire pour documenter le travail effectué.
+Dans cet agenda, créez de nouveaux événements qui représentent votre temps de travail. Chaque événement doit porter un `#tag` qui identifie le projet ou le groupe. Le reste du titre devient la description de la tâche.
 Par exemple :
 > `#projet1 Apprentissage de l'enregistrement du temps avec TimeSheet`
+
+Le tag n'a pas besoin d'être en tête : il est reconnu partout dans le titre, dès lors qu'il est précédé d'une espace.
+> `Réunion #projet1 hebdomadaire` → projet `projet1`, tâche `Réunion hebdomadaire`
+
+Sans description, la tâche est nommée *Tâches diverses*. Un événement « journée entière » est comptabilisé forfaitairement à **7 heures par journée couverte** (ajustez `HEURES_PAR_JOURNEE_ENTIERE` dans `Service_Export.gs` si votre journée de référence diffère).
 
 #### 2. Générez un rapport
 1. Ouvrez un document Google Sheets.

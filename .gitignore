@@ -1,0 +1,7 @@
+# clasp configuration & credentials
+.clasp.json
+.clasprc.json
+
+# Operating System files
+.DS_Store
+Thumbs.db

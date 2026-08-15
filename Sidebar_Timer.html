@@ -3,7 +3,6 @@
 <head>
     <base target="_top">
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <?!= include('Styles') ?>
     <style>
         #timer {
@@ -20,25 +19,25 @@
     <div class="card">
         <div id="timer">00:00:00</div>
         <div style="text-align:center; margin-bottom: 8px; font-size: 11px; color: var(--outline);">
-            <kbd>Espace</kbd> <span id="lblKbSpace">Démarrer / Arrêter</span>
+            <kbd data-i18n="timerKbKey">Espace</kbd> <span data-i18n="timerKbSpace">Démarrer / Arrêter</span>
         </div>
     </div>
 
     <div class="card">
-        <label for="agendaList" id="lblAgenda">Agenda cible</label>
+        <label for="agendaList" data-i18n="timerAgendaLabel">Agenda cible</label>
         <select id="agendaList">
-            <option value="">Chargement...</option>
+            <option value="" data-i18n="loading">Chargement...</option>
         </select>
 
-        <label for="projectName" id="lblProject">Nom du projet</label>
-        <input type="text" id="projectName" placeholder="Ex: Marketing">
+        <label for="projectName" data-i18n="timerProjectLabel">Nom du projet</label>
+        <input type="text" id="projectName" placeholder="Ex : Marketing" data-i18n-placeholder="timerProjectPlaceholder">
 
-        <label for="taskDescription" id="lblTask">Description de la tâche</label>
-        <input type="text" id="taskDescription" placeholder="(Optionnelle)">
-        
+        <label for="taskDescription" data-i18n="timerTaskLabel">Description de la tâche</label>
+        <input type="text" id="taskDescription" placeholder="(Optionnelle)" data-i18n-placeholder="timerTaskPlaceholder">
+
         <button id="startButton" class="btn btn-primary">
-            <span class="material-icons-round" id="btnIcon">play_arrow</span>
-            <span id="btnText">Démarrer</span>
+            <span id="btnIcon"></span>
+            <span id="btnText" data-i18n="timerStart">Démarrer</span>
         </button>
         <div class="loading-container" id="loadingIndicator">
             <div class="spinner"></div>
@@ -49,63 +48,36 @@
 <script>
     var startTime;
     var timerInterval;
-    var lang = 'fr';
-    
-    const i18n = {
-        fr: {
-            kbSpace: 'Démarrer / Arrêter',
-            agendaTarget: 'Agenda cible',
-            loading: 'Chargement...',
-            projectName: 'Nom du projet',
-            projectPlaceholder: 'Ex: Marketing',
-            taskDesc: 'Description de la tâche',
-            taskPlaceholder: '(Optionnelle)',
-            start: 'Démarrer',
-            stop: 'Arrêter',
-            errProject: 'Veuillez entrer un nom de projet.',
-            errAgenda: 'Veuillez sélectionner un agenda.',
-            errLoad: 'Erreur de chargement des calendriers.',
-            error: 'Erreur : '
-        },
-        en: {
-            kbSpace: 'Start / Stop',
-            agendaTarget: 'Target Calendar',
-            loading: 'Loading...',
-            projectName: 'Project Name',
-            projectPlaceholder: 'E.g.: Marketing',
-            taskDesc: 'Task Description',
-            taskPlaceholder: '(Optional)',
-            start: 'Start',
-            stop: 'Stop',
-            errProject: 'Please enter a project name.',
-            errAgenda: 'Please select a calendar.',
-            errLoad: 'Error loading calendars.',
-            error: 'Error: '
-        }
-    };
 
-    function translateApp() {
-        const t = i18n[lang];
-        document.getElementById('lblKbSpace').textContent = t.kbSpace;
-        document.getElementById('lblAgenda').textContent = t.agendaTarget;
-        document.getElementById('lblProject').textContent = t.projectName;
-        document.getElementById('projectName').placeholder = t.projectPlaceholder;
-        document.getElementById('lblTask').textContent = t.taskDesc;
-        document.getElementById('taskDescription').placeholder = t.taskPlaceholder;
-        if (!timerInterval) {
-            document.getElementById('btnText').textContent = t.start;
-        } else {
-            document.getElementById('btnText').textContent = t.stop;
-        }
-        var option = document.querySelector('#agendaList option[value=""]');
-        if(option) option.textContent = t.loading;
+    // Libellés fournis par le serveur (I18n.gs), source de vérité unique.
+    var T = {};
+
+    // Icônes SVG inline : évite de charger la police Material Icons pour deux glyphes.
+    var ICONE_PLAY = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+    var ICONE_STOP = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h12v12H6z"/></svg>';
+
+    function appliquerTextes(textes) {
+        T = textes;
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+            var valeur = textes[el.getAttribute('data-i18n')];
+            if (valeur) el.textContent = valeur;
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+            var valeur = textes[el.getAttribute('data-i18n-placeholder')];
+            if (valeur) el.placeholder = valeur;
+        });
+        // Le libellé du bouton dépend de l'état courant du chronomètre.
+        majBouton(!!timerInterval);
     }
 
-    function initLang() {
-        google.script.run.withSuccessHandler(function(l) {
-            lang = (l === 'en') ? 'en' : 'fr';
-            translateApp();
-        }).getUserLanguage();
+    /** Bascule l'apparence du bouton entre « Démarrer » et « Arrêter ». */
+    function majBouton(enCours) {
+        var btn = document.getElementById('startButton');
+        document.getElementById('btnIcon').innerHTML = enCours ? ICONE_STOP : ICONE_PLAY;
+        document.getElementById('btnText').textContent =
+            (enCours ? T.timerStop : T.timerStart) || (enCours ? 'Arrêter' : 'Démarrer');
+        btn.classList.toggle('btn-danger', enCours);
+        btn.classList.toggle('btn-primary', !enCours);
     }
 
     function formatTime(elapsedTime) {
@@ -119,8 +91,7 @@
     }
 
     function updateTimer() {
-        var elapsedTime = new Date() - startTime;
-        document.getElementById('timer').textContent = formatTime(elapsedTime);
+        document.getElementById('timer').textContent = formatTime(new Date() - startTime);
     }
 
     function toggleLoading(show) {
@@ -130,68 +101,59 @@
 
     function showMessage(msg, isError) {
         var msgDiv = document.getElementById('message');
-        msgDiv.textContent = msg;
+        msgDiv.textContent = msg || '';
         msgDiv.style.color = isError ? 'var(--error)' : 'var(--success)';
         msgDiv.classList.add('fade-in');
-        setTimeout(function() { 
-            msgDiv.textContent = ''; 
+        setTimeout(function () {
+            msgDiv.textContent = '';
             msgDiv.classList.remove('fade-in');
         }, 5000);
     }
 
     function handleStartStop() {
-        const t = i18n[lang];
         var agendaId = document.getElementById('agendaList').value;
         var projectName = document.getElementById('projectName').value.trim();
         var taskDescription = document.getElementById('taskDescription').value.trim();
-        var btn = document.getElementById('startButton');
 
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
-            document.getElementById('btnText').textContent = t.start;
-            document.getElementById('btnIcon').textContent = 'play_arrow';
-            btn.classList.remove('btn-danger');
-            btn.classList.add('btn-primary');
+            majBouton(false);
             toggleLoading(true);
-            
+
             var endTime = new Date();
-            
+
             google.script.run
-                .withSuccessHandler(function(response) {
+                .withSuccessHandler(function (response) {
                     toggleLoading(false);
                     showMessage(response, false);
                     document.getElementById('projectName').value = '';
                     document.getElementById('taskDescription').value = '';
                     document.getElementById('timer').textContent = '00:00:00';
                 })
-                .withFailureHandler(function(error) {
+                .withFailureHandler(function (error) {
+                    // L'enregistrement a échoué : on relance le chronomètre pour
+                    // ne pas perdre le temps déjà écoulé.
                     toggleLoading(false);
-                    showMessage(t.error + error.message, true);
+                    showMessage(T.errPrefix + error.message, true);
                     timerInterval = setInterval(updateTimer, 1000);
-                    document.getElementById('btnText').textContent = t.stop;
-                    document.getElementById('btnIcon').textContent = 'stop';
-                    btn.classList.add('btn-danger');
-                    btn.classList.remove('btn-primary');
+                    majBouton(true);
                 })
                 .creerEvenementDansAgenda(agendaId, projectName, taskDescription, startTime.toISOString(), endTime.toISOString());
-            
+
         } else {
             if (!projectName) {
-                showMessage(t.errProject, true);
+                showMessage(T.errProject, true);
                 return;
             }
             if (!agendaId) {
-                showMessage(t.errAgenda, true);
+                showMessage(T.errCalendar, true);
                 return;
             }
 
-            startTime = new Date(); 
+            startTime = new Date();
             timerInterval = setInterval(updateTimer, 1000);
-            document.getElementById('btnText').textContent = t.stop;
-            document.getElementById('btnIcon').textContent = 'stop';
-            btn.classList.remove('btn-primary');
-            btn.classList.add('btn-danger');
+            majBouton(true);
             document.getElementById('message').textContent = '';
 
             google.script.run.saveTimerState(agendaId, projectName, taskDescription, startTime.toISOString());
@@ -200,9 +162,10 @@
 
     document.getElementById('startButton').addEventListener('click', handleStartStop);
 
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.code === 'Space') {
-            if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'SELECT') {
+            var tag = document.activeElement.tagName;
+            if (tag !== 'INPUT' && tag !== 'SELECT' && tag !== 'TEXTAREA') {
                 e.preventDefault();
                 handleStartStop();
             }
@@ -211,10 +174,10 @@
 
     function chargerAgendas() {
         google.script.run
-            .withSuccessHandler(function(agendas) {
+            .withSuccessHandler(function (agendas) {
                 var select = document.getElementById('agendaList');
                 select.innerHTML = '';
-                agendas.forEach(function(agenda) {
+                agendas.forEach(function (agenda) {
                     var option = document.createElement('option');
                     option.value = agenda.id;
                     option.textContent = agenda.nom;
@@ -222,34 +185,48 @@
                 });
                 verifierEtatChronometre();
             })
-            .withFailureHandler(function(error) {
-                showMessage(i18n[lang].errLoad, true);
+            .withFailureHandler(function () {
+                showMessage(T.errLoadCalendars, true);
             })
             .obtenirCalendriers();
     }
 
     function verifierEtatChronometre() {
-        const t = i18n[lang];
-        google.script.run.withSuccessHandler(function(state) {
-            if (state.isRunning) {
-                startTime = new Date(state.startTime);
-                document.getElementById('agendaList').value = state.agendaId;
-                document.getElementById('projectName').value = state.projectName;
-                document.getElementById('taskDescription').value = state.taskDescription;
-                
-                timerInterval = setInterval(updateTimer, 1000);
-                var btn = document.getElementById('startButton');
-                document.getElementById('btnText').textContent = (t ? t.stop : 'Arrêter');
-                document.getElementById('btnIcon').textContent = 'stop';
-                btn.classList.remove('btn-primary');
-                btn.classList.add('btn-danger');
-                updateTimer();
+        google.script.run.withSuccessHandler(function (state) {
+            if (!state.isRunning) return;
+
+            var select = document.getElementById('agendaList');
+            select.value = state.agendaId;
+            // L'agenda mémorisé peut avoir été supprimé ou ne plus être partagé :
+            // sans ce garde-fou, l'arrêt du chronomètre échouerait silencieusement.
+            if (select.value !== state.agendaId) {
+                var manquant = document.createElement('option');
+                manquant.value = state.agendaId;
+                manquant.textContent = state.agendaId;
+                select.insertBefore(manquant, select.firstChild);
+                select.value = state.agendaId;
             }
+
+            document.getElementById('projectName').value = state.projectName;
+            document.getElementById('taskDescription').value = state.taskDescription;
+
+            startTime = new Date(state.startTime);
+            timerInterval = setInterval(updateTimer, 1000);
+            majBouton(true);
+            updateTimer();
         }).getTimerState();
     }
 
-    initLang();
-    chargerAgendas();
+    window.onload = function () {
+        majBouton(false);
+        google.script.run
+            .withSuccessHandler(function (textes) {
+                appliquerTextes(textes);
+                chargerAgendas();
+            })
+            .withFailureHandler(chargerAgendas)
+            .getTextesUI();
+    };
 </script>
 </body>
 </html>

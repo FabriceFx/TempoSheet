@@ -3,7 +3,6 @@
 <head>
     <base target="_top">
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <?!= include('Styles') ?>
     <style>
         p {
@@ -30,42 +29,42 @@
 </head>
 <body>
     <div class="card">
-        <h2 id="lblTitle">Générer un rapport</h2>
-        <p id="lblSubtitle">Sélectionnez un calendrier et une période pour créer votre feuille de temps.</p>
-        
+        <h2 data-i18n="exportTitle">Générer un rapport</h2>
+        <p data-i18n="exportSubtitle">Sélectionnez un calendrier et une période pour créer votre feuille de temps.</p>
+
         <div class="dropdown-container">
-            <label for="calendrierSelectionne" id="lblCalendar">Calendrier source</label>
+            <label for="calendrierSelectionne" data-i18n="exportCalendarLabel">Calendrier source</label>
             <select id="calendrierSelectionne">
-                <option value="">Chargement...</option>
+                <option value="" data-i18n="loading">Chargement...</option>
             </select>
         </div>
-        
+
         <div class="dropdown-container">
-            <label for="periodeExtraction" id="lblPeriod">Période</label>
+            <label for="periodeExtraction" data-i18n="exportPeriodLabel">Période</label>
             <select id="periodeExtraction" onchange="toggleCustomDateFields()">
-                <option value="cetteSemaine" id="optThisWeek">Cette semaine</option>
-                <option value="laSemaineDerniere" id="optLastWeek">La semaine dernière</option>
-                <option value="ceMois" id="optThisMonth">Ce mois</option>
-                <option value="leDernierMois" id="optLastMonth">Le mois dernier</option>
-                <option value="cetteAnnee" id="optThisYear">Cette année</option>
-                <option value="periodeSpecifiee" id="optCustom">Période spécifiée</option>
+                <option value="cetteSemaine" data-i18n="periodThisWeek">Cette semaine</option>
+                <option value="laSemaineDerniere" data-i18n="periodLastWeek">La semaine dernière</option>
+                <option value="ceMois" data-i18n="periodThisMonth">Ce mois</option>
+                <option value="leDernierMois" data-i18n="periodLastMonth">Le mois dernier</option>
+                <option value="cetteAnnee" data-i18n="periodThisYear">Cette année</option>
+                <option value="periodeSpecifiee" data-i18n="periodCustom">Période spécifiée</option>
             </select>
         </div>
-        
+
         <div id="customDateFields" style="display:none;">
             <div class="date-container">
-                <label for="dateDebut" id="lblStart">Date de début</label>
+                <label for="dateDebut" data-i18n="exportStartDate">Date de début</label>
                 <input type="date" id="dateDebut">
             </div>
             <div class="date-container">
-                <label for="dateFin" id="lblEnd">Date de fin</label>
+                <label for="dateFin" data-i18n="exportEndDate">Date de fin</label>
                 <input type="date" id="dateFin">
             </div>
         </div>
-        
+
         <button id="btnCreer" class="btn">
-            <span class="material-icons-round">description</span>
-            <span id="btnText">Créer le rapport</span>
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            <span data-i18n="exportBtnCreate">Créer le rapport</span>
         </button>
         <div class="loading-container" id="loadingIndicator">
             <div class="spinner"></div>
@@ -74,86 +73,21 @@
     </div>
 
     <script>
-        var lang = 'fr';
-        
-        const i18n = {
-            fr: {
-                title: 'Générer un rapport',
-                subtitle: 'Sélectionnez un calendrier et une période pour créer votre feuille de temps.',
-                calendar: 'Calendrier source',
-                loading: 'Chargement...',
-                period: 'Période',
-                thisWeek: 'Cette semaine',
-                lastWeek: 'La semaine dernière',
-                thisMonth: 'Ce mois',
-                lastMonth: 'Le mois dernier',
-                thisYear: 'Cette année',
-                custom: 'Période spécifiée',
-                start: 'Date de début',
-                end: 'Date de fin',
-                btnCreate: 'Créer le rapport',
-                errCal: 'Veuillez sélectionner un calendrier.',
-                errDates: 'Veuillez spécifier les dates de début et de fin.',
-                errLoad: 'Erreur de chargement des calendriers.',
-                error: 'Erreur : '
-            },
-            en: {
-                title: 'Generate Report',
-                subtitle: 'Select a calendar and a period to create your timesheet.',
-                calendar: 'Source Calendar',
-                loading: 'Loading...',
-                period: 'Period',
-                thisWeek: 'This week',
-                lastWeek: 'Last week',
-                thisMonth: 'This month',
-                lastMonth: 'Last month',
-                thisYear: 'This year',
-                custom: 'Custom period',
-                start: 'Start Date',
-                end: 'End Date',
-                btnCreate: 'Create Report',
-                errCal: 'Please select a calendar.',
-                errDates: 'Please specify start and end dates.',
-                errLoad: 'Error loading calendars.',
-                error: 'Error: '
-            }
-        };
+        // Libellés fournis par le serveur (I18n.gs), source de vérité unique.
+        // Les valeurs présentes dans le HTML ne servent que d'affichage initial.
+        var T = {};
 
-        function translateApp() {
-            const t = i18n[lang];
-            document.getElementById('lblTitle').textContent = t.title;
-            document.getElementById('lblSubtitle').textContent = t.subtitle;
-            document.getElementById('lblCalendar').textContent = t.calendar;
-            document.getElementById('lblPeriod').textContent = t.period;
-            document.getElementById('optThisWeek').textContent = t.thisWeek;
-            document.getElementById('optLastWeek').textContent = t.lastWeek;
-            document.getElementById('optThisMonth').textContent = t.thisMonth;
-            document.getElementById('optLastMonth').textContent = t.lastMonth;
-            document.getElementById('optThisYear').textContent = t.thisYear;
-            document.getElementById('optCustom').textContent = t.custom;
-            document.getElementById('lblStart').textContent = t.start;
-            document.getElementById('lblEnd').textContent = t.end;
-            document.getElementById('btnText').textContent = t.btnCreate;
-            
-            var option = document.querySelector('#calendrierSelectionne option[value=""]');
-            if(option) option.textContent = t.loading;
-        }
-
-        function initLang() {
-            google.script.run.withSuccessHandler(function(l) {
-                lang = (l === 'en') ? 'en' : 'fr';
-                translateApp();
-            }).getUserLanguage();
+        function appliquerTextes(textes) {
+            T = textes;
+            document.querySelectorAll('[data-i18n]').forEach(function (el) {
+                var valeur = textes[el.getAttribute('data-i18n')];
+                if (valeur) el.textContent = valeur;
+            });
         }
 
         function toggleCustomDateFields() {
-            var selection = document.getElementById('periodeExtraction').value;
-            var customDateFields = document.getElementById('customDateFields');
-            if (selection === 'periodeSpecifiee') {
-                customDateFields.style.display = 'block';
-            } else {
-                customDateFields.style.display = 'none';
-            }
+            var estPersonnalise = document.getElementById('periodeExtraction').value === 'periodeSpecifiee';
+            document.getElementById('customDateFields').style.display = estPersonnalise ? 'block' : 'none';
         }
 
         function toggleLoading(show) {
@@ -163,67 +97,74 @@
 
         function showMessage(msg) {
             var msgDiv = document.getElementById('message');
-            msgDiv.textContent = msg;
+            msgDiv.textContent = msg || '';
             msgDiv.classList.add('fade-in');
-            setTimeout(function() { 
-                msgDiv.textContent = ''; 
+            setTimeout(function () {
+                msgDiv.textContent = '';
                 msgDiv.classList.remove('fade-in');
             }, 5000);
         }
 
-        window.onload = function() {
-            initLang();
-            
+        function chargerCalendriers() {
             google.script.run
-                .withSuccessHandler(function(calendriers) {
+                .withSuccessHandler(function (calendriers) {
                     var select = document.getElementById('calendrierSelectionne');
                     select.innerHTML = '';
-                    calendriers.forEach(function(calendrier) {
+                    calendriers.forEach(function (calendrier) {
                         var option = document.createElement('option');
                         option.value = calendrier.id;
                         option.textContent = calendrier.nom;
                         select.appendChild(option);
                     });
                 })
-                .withFailureHandler(function(error) {
-                    showMessage(i18n[lang].errLoad);
+                .withFailureHandler(function () {
+                    showMessage(T.errLoadCalendars);
                 })
                 .obtenirCalendriers();
+        }
 
-            document.getElementById('btnCreer').onclick = function() {
-                const t = i18n[lang];
-                var selectedCalendarId = document.getElementById('calendrierSelectionne').value;
-                var selectedPeriod = document.getElementById('periodeExtraction').value;
-                var dateDebut = '';
-                var dateFin = '';
-                
-                if (!selectedCalendarId) {
-                    showMessage(t.errCal);
+        document.getElementById('btnCreer').onclick = function () {
+            var selectedCalendarId = document.getElementById('calendrierSelectionne').value;
+            var selectedPeriod = document.getElementById('periodeExtraction').value;
+            var dateDebut = '';
+            var dateFin = '';
+
+            if (!selectedCalendarId) {
+                showMessage(T.errCalendar);
+                return;
+            }
+
+            if (selectedPeriod === 'periodeSpecifiee') {
+                dateDebut = document.getElementById('dateDebut').value;
+                dateFin = document.getElementById('dateFin').value;
+                if (!dateDebut || !dateFin) {
+                    showMessage(T.errDates);
                     return;
                 }
+            }
 
-                if (selectedPeriod === 'periodeSpecifiee') {
-                    dateDebut = document.getElementById('dateDebut').value;
-                    dateFin = document.getElementById('dateFin').value;
-                    if (!dateDebut || !dateFin) {
-                        showMessage(t.errDates);
-                        return;
-                    }
-                }
+            toggleLoading(true);
 
-                toggleLoading(true);
+            google.script.run
+                .withSuccessHandler(function () {
+                    toggleLoading(false);
+                    google.script.host.close();
+                })
+                .withFailureHandler(function (error) {
+                    toggleLoading(false);
+                    showMessage(T.errPrefix + error.message);
+                })
+                .exporterCalendrier(selectedCalendarId, selectedPeriod, dateDebut, dateFin);
+        };
 
-                google.script.run
-                    .withSuccessHandler(function() {
-                        toggleLoading(false);
-                        google.script.host.close();
-                    })
-                    .withFailureHandler(function(error) {
-                        toggleLoading(false);
-                        showMessage(t.error + error.message);
-                    })
-                    .exporterCalendrier(selectedCalendarId, selectedPeriod, dateDebut, dateFin);
-            };
+        window.onload = function () {
+            google.script.run
+                .withSuccessHandler(function (textes) {
+                    appliquerTextes(textes);
+                    chargerCalendriers();
+                })
+                .withFailureHandler(chargerCalendriers)
+                .getTextesUI();
         };
     </script>
 </body>
