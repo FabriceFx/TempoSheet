@@ -3,6 +3,8 @@
 # navigateur classique et non à une barre latérale.
 presentation.html
 README.md
+CHANGELOG.md
+LICENSE
 .gitignore
 .git/**
 node_modules/**
